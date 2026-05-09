@@ -41,12 +41,7 @@ body{
   letter-spacing:2px;
   color:#556;
 }
-.status-dot{
-  width:8px;height:8px;
-  border-radius:50%;
-  background:#555;
-  transition:background 0.3s;
-}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#555;transition:background 0.3s;}
 .status-dot.on {background:#3c3;box-shadow:0 0 6px #3c3;}
 .status-dot.off{background:#e33;box-shadow:0 0 6px #e33;}
 
@@ -59,12 +54,8 @@ body{
   margin-bottom:14px;
 }
 .panel{
-  border-radius:12px;
-  padding:14px 10px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:5px;
+  border-radius:12px;padding:14px 10px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
 }
 .panel-home {background:linear-gradient(160deg,#2a0a0a,#1a0505);border:1px solid #5a1515;}
 .panel-time {background:linear-gradient(160deg,#111822,#0c1219);border:1px solid #1e3048;}
@@ -74,59 +65,33 @@ body{
 .guest-label{color:#5080e0;}
 .time-label {color:#aabbcc;}
 
-.score{
-  font-size:clamp(50px,12vw,90px);
-  font-weight:bold;
-  line-height:1;
-  color:#fff;
-  margin:4px 0;
-}
-.game-time{
-  font-size:clamp(30px,7vw,52px);
-  font-weight:bold;
-  color:#f0a800;
-  letter-spacing:2px;
-}
+.score{font-size:clamp(50px,12vw,90px);font-weight:bold;line-height:1;color:#fff;margin:4px 0;}
+.game-time{font-size:clamp(30px,7vw,52px);font-weight:bold;color:#f0a800;letter-spacing:2px;}
 .shot-label{font-size:11px;letter-spacing:3px;color:#778899;margin-top:4px;}
 .shot-val{font-size:clamp(22px,5vw,32px);font-weight:bold;color:#50aaff;}
 .foul-row{font-size:11px;letter-spacing:2px;color:#778;margin-top:4px;}
 .foul-num{font-size:18px;font-weight:bold;color:#e05050;margin-left:3px;}
 
 /* ── SET TIME ───────────────────────────────────────── */
-.set-time{
-  width:100%;
-  margin-top:8px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:5px;
-}
+.set-time{width:100%;margin-top:8px;display:flex;flex-direction:column;align-items:center;gap:5px;}
 .time-inputs{display:flex;align-items:center;gap:4px;}
 .time-inputs input{
-  width:44px;padding:6px 4px;
-  border-radius:6px;
-  border:1px solid #2a4060;
-  background:#0d1520;
-  color:#fff;
-  font-size:15px;
-  text-align:center;
+  width:44px;padding:6px 4px;border-radius:6px;
+  border:1px solid #2a4060;background:#0d1520;
+  color:#fff;font-size:15px;text-align:center;
 }
 .time-inputs input:focus{outline:none;border-color:#f0a800;}
 .set-btn{
-  width:100%;padding:7px 0;
-  border:none;border-radius:6px;
+  width:100%;padding:7px 0;border:none;border-radius:6px;
   background:linear-gradient(180deg,#8a6010,#6a4808);
   color:#ffd060;font-size:12px;letter-spacing:2px;
-  cursor:pointer;
-  border-top:1px solid #c08820;
+  cursor:pointer;border-top:1px solid #c08820;
 }
 
 /* ── SECTION LABELS ─────────────────────────────────── */
 .section-label{
   font-size:11px;letter-spacing:3px;color:#445566;
-  text-align:left;
-  margin:12px 0 5px 2px;
-  text-transform:uppercase;
+  text-align:left;margin:12px 0 5px 2px;text-transform:uppercase;
 }
 .team-row{display:flex;justify-content:space-around;margin-bottom:5px;}
 .team-row span{font-size:11px;letter-spacing:3px;font-weight:bold;text-transform:uppercase;}
@@ -134,16 +99,13 @@ body{
 /* ── BUTTONS ────────────────────────────────────────── */
 .btn-group{display:flex;gap:7px;width:100%;margin-bottom:3px;}
 button{
-  flex:1;padding:16px 8px;
-  border:none;border-radius:8px;
-  font-size:13px;letter-spacing:1px;
-  cursor:pointer;
+  flex:1;padding:16px 8px;border:none;border-radius:8px;
+  font-size:13px;letter-spacing:1px;cursor:pointer;
   -webkit-tap-highlight-color:transparent;
   transition:filter 0.12s,transform 0.1s;
   border-top:1px solid rgba(255,255,255,0.07);
 }
 button:active{transform:scale(0.96);filter:brightness(0.8);}
-
 .btn-home   {background:linear-gradient(180deg,#6a1010,#4a0808);color:#ff8080;border-top-color:#a02020;font-weight:bold;}
 .btn-guest  {background:linear-gradient(180deg,#0a1060,#060a40);color:#8090ff;border-top-color:#2030a0;font-weight:bold;}
 .btn-start  {background:linear-gradient(180deg,#1a5020,#0e3012);color:#50e880;border-top-color:#2a7030;}
@@ -160,14 +122,45 @@ button:active{transform:scale(0.96);filter:brightness(0.8);}
 
 /* ── RUNNING INDICATOR ──────────────────────────────── */
 .running-badge{
-  display:inline-block;
-  font-size:9px;letter-spacing:2px;
-  padding:2px 7px;border-radius:10px;
-  margin-top:3px;
-  transition:all 0.3s;
+  display:inline-block;font-size:9px;letter-spacing:2px;
+  padding:2px 7px;border-radius:10px;margin-top:3px;transition:all 0.3s;
 }
 .running-badge.on {background:#1a3a1a;color:#50e880;border:1px solid #2a6030;}
 .running-badge.off{background:#1a1a1a;color:#445;border:1px solid #2a2a2a;}
+
+/* ── SOUNDBOARD ─────────────────────────────────────── */
+.soundboard-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-bottom:3px;
+}
+.btn-sound{
+  padding:14px 8px;border:none;border-radius:8px;
+  font-size:11px;letter-spacing:1px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:filter 0.12s,transform 0.1s;
+  display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.3;
+}
+.btn-sound:active{transform:scale(0.94);filter:brightness(0.7);}
+.btn-sound .snd-icon{font-size:22px;}
+.btn-sound.playing{animation:soundPulse 0.2s ease;}
+@keyframes soundPulse{0%{transform:scale(1);}50%{transform:scale(1.07);}100%{transform:scale(1);}}
+
+.snd-crowd  {background:linear-gradient(180deg,#1a3a10,#0e2008);color:#80e040;border-top:1px solid #3a6020;}
+.snd-horn   {background:linear-gradient(180deg,#3a2000,#201200);color:#ffa030;border-top:1px solid #704010;}
+.snd-whistle{background:linear-gradient(180deg,#002a3a,#001520);color:#40c0ff;border-top:1px solid #105070;}
+.snd-alarm  {background:linear-gradient(180deg,#3a0010,#200008);color:#ff4060;border-top:1px solid #701030;}
+.snd-cheer  {background:linear-gradient(180deg,#2a1a00,#160e00);color:#ffcc30;border-top:1px solid #604020;}
+.snd-dunk   {background:linear-gradient(180deg,#1a0a3a,#0e0520);color:#c060ff;border-top:1px solid #502080;}
+.snd-airhorn{background:linear-gradient(180deg,#003a2a,#001a14);color:#30ffcc;border-top:1px solid #106050;}
+.snd-three  {background:linear-gradient(180deg,#3a2a00,#201800);color:#ffd060;border-top:1px solid #705010;}
+
+.vol-row{
+  display:flex;align-items:center;gap:8px;
+  margin:6px 0 3px;font-size:11px;letter-spacing:2px;color:#445566;
+}
+.vol-row input[type=range]{flex:1;accent-color:#00e5cc;cursor:pointer;}
 
 /* ── TOAST ──────────────────────────────────────────── */
 .toast{
@@ -187,6 +180,7 @@ button:active{transform:scale(0.96);filter:brightness(0.8);}
   .score{font-size:40px;}
   .game-time{font-size:26px;}
   button{padding:13px 5px;font-size:11px;}
+  .btn-sound{padding:11px 5px;font-size:10px;}
 }
 </style>
 </head>
@@ -268,7 +262,6 @@ button:active{transform:scale(0.96);filter:brightness(0.8);}
   </div>
 
   <!-- ── GAME TIMER ───────────────────────────────── -->
-  <!-- Starting game timer also starts shot clock (handled in ESP32) -->
   <div class="section-label">Game Timer</div>
   <div class="btn-group">
     <button class="btn-start" onclick="setTimerRun(true)">&#9654; START</button>
@@ -296,6 +289,40 @@ button:active{transform:scale(0.96);filter:brightness(0.8);}
     <button class="btn-period" id="pBtn4" onclick="setPeriod(4)">Q4</button>
   </div>
 
+  <!-- ── SOUNDBOARD ───────────────────────────────── -->
+  <div class="section-label">Soundboard</div>
+  <div class="vol-row">
+    <span>&#128266;</span>
+    <input type="range" id="volSlider" min="0" max="1" step="0.05" value="0.7">
+    <span>VOL</span>
+  </div>
+  <div class="soundboard-grid">
+    <button class="btn-sound snd-airhorn" onclick="playSound('airhorn',this)">
+      <span class="snd-icon">&#128227;</span>AIR HORN
+    </button>
+    <button class="btn-sound snd-whistle" onclick="playSound('whistle',this)">
+      <span class="snd-icon">&#128168;</span>WHISTLE
+    </button>
+    <button class="btn-sound snd-crowd" onclick="playSound('crowd',this)">
+      <span class="snd-icon">&#128483;</span>CROWD CHEER
+    </button>
+    <button class="btn-sound snd-cheer" onclick="playSound('ooh',this)">
+      <span class="snd-icon">&#128562;</span>OOH / GASP
+    </button>
+    <button class="btn-sound snd-dunk" onclick="playSound('dunk',this)">
+      <span class="snd-icon">&#127936;</span>DUNK BOOM
+    </button>
+    <button class="btn-sound snd-three" onclick="playSound('three',this)">
+      <span class="snd-icon">&#127362;</span>3-POINTER
+    </button>
+    <button class="btn-sound snd-alarm" onclick="playSound('alarm',this)">
+      <span class="snd-icon">&#128680;</span>ALARM
+    </button>
+    <button class="btn-sound snd-horn" onclick="playSound('horn',this)">
+      <span class="snd-icon">&#127930;</span>GAME HORN
+    </button>
+  </div>
+
   <!-- ── SYSTEM ────────────────────────────────────── -->
   <div class="section-label">System</div>
   <div class="btn-group">
@@ -312,7 +339,7 @@ var firebaseConfig = {
   databaseURL: "https://scoreboard-c0863-default-rtdb.asia-southeast1.firebasedatabase.app/"
 };
 
-var scoreRef; // global ref — set after Firebase loads
+var scoreRef;
 var _db;
 
 window.onload = function() {
@@ -368,12 +395,8 @@ function resetShot(val) {
 // ── PERIOD ─────────────────────────────────────────────
 function setPeriod(n) {
   scoreRef.update({
-    period:   n,
-    timerRun: false,
-    shotRun:  false,
-    minutes:  12,
-    seconds:  0,
-    shot:     24
+    period: n, timerRun: false, shotRun: false,
+    minutes: 12, seconds: 0, shot: 24
   });
   toast("QUARTER " + n);
 }
@@ -401,25 +424,192 @@ function doBuzz() {
 function doReset() {
   if (!confirm("Reset entire scoreboard?")) return;
   scoreRef.set({
-    home:     0,
-    guest:    0,
-    hf:       0,
-    gf:       0,
-    shot:     24,
-    period:   1,
-    minutes:  12,
-    seconds:  0,
-    timerRun: false,
-    shotRun:  false,
-    buzz:     false
+    home: 0, guest: 0, hf: 0, gf: 0,
+    shot: 24, period: 1, minutes: 12, seconds: 0,
+    timerRun: false, shotRun: false, buzz: false
   });
   toast("RESET DONE");
 }
 
-// ── LISTENERS (called after Firebase is ready) ─────────
+// ── SOUNDBOARD ─────────────────────────────────────────
+// All sounds are synthesized using Web Audio API — no files needed
+var audioCtx = null;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  // Resume if suspended (browser autoplay policy)
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function getVol() {
+  return parseFloat(document.getElementById('volSlider').value);
+}
+
+// Master gain helper
+function makeGain(ctx, vol) {
+  var g = ctx.createGain();
+  g.gain.value = vol;
+  g.connect(ctx.destination);
+  return g;
+}
+
+// Generic oscillator note helper
+function playTone(freq, type, start, dur, vol, ctx, out) {
+  var osc = ctx.createOscillator();
+  var g   = ctx.createGain();
+  osc.type      = type;
+  osc.frequency.setValueAtTime(freq, start);
+  g.gain.setValueAtTime(vol, start);
+  g.gain.exponentialRampToValueAtTime(0.001, start + dur);
+  osc.connect(g);
+  g.connect(out);
+  osc.start(start);
+  osc.stop(start + dur + 0.05);
+}
+
+// Noise burst helper (for crowd/impact sounds)
+function playNoise(start, dur, vol, ctx, out) {
+  var bufSize = ctx.sampleRate * dur;
+  var buf     = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  var data    = buf.getChannelData(0);
+  for (var i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+  var src = ctx.createBufferSource();
+  src.buffer = buf;
+  var filter = ctx.createBiquadFilter();
+  filter.type            = 'bandpass';
+  filter.frequency.value = 800;
+  filter.Q.value         = 0.5;
+  var g = ctx.createGain();
+  g.gain.setValueAtTime(vol, start);
+  g.gain.exponentialRampToValueAtTime(0.001, start + dur);
+  src.connect(filter);
+  filter.connect(g);
+  g.connect(out);
+  src.start(start);
+  src.stop(start + dur + 0.05);
+}
+
+var soundFns = {
+
+  // 🔊 Air Horn — long descending blare
+  airhorn: function(ctx, out, vol) {
+    var t = ctx.currentTime;
+    playTone(320, 'sawtooth', t,       1.2, vol * 0.8, ctx, out);
+    playTone(160, 'sawtooth', t + 0.1, 1.1, vol * 0.5, ctx, out);
+    playTone(640, 'sawtooth', t,       0.3, vol * 0.3, ctx, out);
+  },
+
+  // 🌬 Whistle — sharp high frequency with vibrato
+  whistle: function(ctx, out, vol) {
+    var t   = ctx.currentTime;
+    var osc = ctx.createOscillator();
+    var lfo = ctx.createOscillator();
+    var lfoG = ctx.createGain();
+    var g   = ctx.createGain();
+    osc.type      = 'sine';
+    osc.frequency.setValueAtTime(2800, t);
+    osc.frequency.linearRampToValueAtTime(3200, t + 0.1);
+    osc.frequency.linearRampToValueAtTime(2900, t + 0.6);
+    lfo.type = 'sine';
+    lfo.frequency.value = 8;
+    lfoG.gain.value = 60;
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+    lfo.connect(lfoG);
+    lfoG.connect(osc.frequency);
+    osc.connect(g);
+    g.connect(out);
+    osc.start(t); osc.stop(t + 0.75);
+    lfo.start(t); lfo.stop(t + 0.75);
+  },
+
+  // 👥 Crowd Cheer — layered noise burst
+  crowd: function(ctx, out, vol) {
+    var t = ctx.currentTime;
+    for (var i = 0; i < 3; i++) {
+      playNoise(t + i * 0.05, 1.5 - i * 0.1, vol * (0.6 - i * 0.1), ctx, out);
+    }
+    // Rising excitement tones
+    [300, 450, 600, 800].forEach(function(f, idx) {
+      playTone(f, 'sine', t + idx * 0.08, 0.8, vol * 0.08, ctx, out);
+    });
+  },
+
+  // 😲 Ooh / Gasp — descending "ohhh" crowd
+  ooh: function(ctx, out, vol) {
+    var t   = ctx.currentTime;
+    var osc = ctx.createOscillator();
+    var g   = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, t);
+    osc.frequency.linearRampToValueAtTime(250, t + 0.8);
+    g.gain.setValueAtTime(vol * 0.6, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+    osc.connect(g); g.connect(out);
+    osc.start(t); osc.stop(t + 1.0);
+    playNoise(t, 0.8, vol * 0.3, ctx, out);
+  },
+
+  // 🏀 Dunk Boom — low impact thud
+  dunk: function(ctx, out, vol) {
+    var t   = ctx.currentTime;
+    var osc = ctx.createOscillator();
+    var g   = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(180, t);
+    osc.frequency.exponentialRampToValueAtTime(40, t + 0.3);
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+    osc.connect(g); g.connect(out);
+    osc.start(t); osc.stop(t + 0.45);
+    playNoise(t, 0.15, vol * 0.8, ctx, out);
+    // Follow-up crowd
+    playNoise(t + 0.15, 1.0, vol * 0.3, ctx, out);
+  },
+
+  // 3️⃣ 3-Pointer — ascending victory arpeggio
+  three: function(ctx, out, vol) {
+    var t = ctx.currentTime;
+    [523, 659, 784, 1047].forEach(function(f, i) {
+      playTone(f, 'triangle', t + i * 0.12, 0.4, vol * 0.6, ctx, out);
+    });
+    playNoise(t + 0.4, 0.8, vol * 0.25, ctx, out);
+  },
+
+  // 🚨 Alarm — urgent repeating beeps
+  alarm: function(ctx, out, vol) {
+    var t = ctx.currentTime;
+    for (var i = 0; i < 6; i++) {
+      playTone(1200, 'square', t + i * 0.18, 0.12, vol * 0.5, ctx, out);
+      playTone(900,  'square', t + i * 0.18 + 0.09, 0.08, vol * 0.4, ctx, out);
+    }
+  },
+
+  // 🎺 Game Horn — classic end-of-period horn
+  horn: function(ctx, out, vol) {
+    var t = ctx.currentTime;
+    playTone(220, 'sawtooth', t,        0.15, vol * 0.7, ctx, out);
+    playTone(220, 'sawtooth', t + 0.18, 0.15, vol * 0.7, ctx, out);
+    playTone(220, 'sawtooth', t + 0.36, 0.8,  vol * 0.8, ctx, out);
+    playTone(110, 'sawtooth', t + 0.36, 0.8,  vol * 0.4, ctx, out);
+  }
+};
+
+function playSound(name, btn) {
+  var ctx = getAudioCtx();
+  var out = makeGain(ctx, getVol());
+  var fn  = soundFns[name];
+  if (!fn) return;
+  fn(ctx, out, 1.0);
+  // Visual pulse
+  btn.classList.add('playing');
+  setTimeout(function(){ btn.classList.remove('playing'); }, 250);
+}
+
+// ── LISTENERS ──────────────────────────────────────────
 function startListeners() {
 
-  // Realtime display — pure Firebase, no local countdown
   scoreRef.on("value", function(snap) {
     var d = snap.val() || {};
 
@@ -427,9 +617,7 @@ function startListeners() {
     document.getElementById('guest').textContent = d.guest || 0;
     document.getElementById('hf')   .textContent = d.hf    || 0;
     document.getElementById('gf')   .textContent = d.gf    || 0;
-
-    document.getElementById('shot').textContent =
-      (d.shot !== undefined) ? d.shot : 24;
+    document.getElementById('shot') .textContent = (d.shot !== undefined) ? d.shot : 24;
 
     var m = (d.minutes !== undefined) ? d.minutes : 12;
     var s = (d.seconds !== undefined) ? d.seconds : 0;
@@ -437,16 +625,10 @@ function startListeners() {
 
     var tb  = document.getElementById('timerBadge');
     var shb = document.getElementById('shotBadge');
-    if (d.timerRun) {
-      tb.textContent = 'RUNNING'; tb.className = 'running-badge on';
-    } else {
-      tb.textContent = 'STOPPED'; tb.className = 'running-badge off';
-    }
-    if (d.shotRun) {
-      shb.textContent = 'RUNNING'; shb.className = 'running-badge on';
-    } else {
-      shb.textContent = 'STOPPED'; shb.className = 'running-badge off';
-    }
+    if (d.timerRun) { tb.textContent  = 'RUNNING'; tb.className  = 'running-badge on'; }
+    else            { tb.textContent  = 'STOPPED'; tb.className  = 'running-badge off'; }
+    if (d.shotRun)  { shb.textContent = 'RUNNING'; shb.className = 'running-badge on'; }
+    else            { shb.textContent = 'STOPPED'; shb.className = 'running-badge off'; }
 
     var p = d.period || 1;
     for (var i = 1; i <= 4; i++) {
@@ -455,23 +637,21 @@ function startListeners() {
     }
 
   }, function() {
-    document.getElementById('dot')      .className = 'status-dot off';
+    document.getElementById('dot')      .className  = 'status-dot off';
     document.getElementById('statusTxt').textContent = 'DISCONNECTED';
   });
 
-  // Connectivity monitor
   _db.ref(".info/connected").on("value", function(snap) {
     if (snap.val() === true) {
-      document.getElementById('dot')      .className = 'status-dot on';
+      document.getElementById('dot')      .className  = 'status-dot on';
       document.getElementById('statusTxt').textContent = 'CONNECTED';
     } else {
-      document.getElementById('dot')      .className = 'status-dot off';
+      document.getElementById('dot')      .className  = 'status-dot off';
       document.getElementById('statusTxt').textContent = 'DISCONNECTED';
     }
   });
 }
 
-// ── HELPERS ────────────────────────────────────────────
 function pad(n) { return String(n).padStart(2, '0'); }
 </script>
 </body>
