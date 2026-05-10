@@ -99,6 +99,39 @@ body{
 }
 .settings-btn:hover{color:var(--accent);border-color:var(--accent);}
 
+/* ICON BUTTONS (fullscreen / landscape) */
+.icon-btn{
+  width:34px;height:34px;
+  border:1px solid var(--border2);
+  border-radius:10px;
+  background:#0c1420;
+  color:var(--muted);
+  font-size:15px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:.15s;
+  flex-shrink:0;
+}
+.icon-btn:hover{color:var(--accent);border-color:var(--accent);}
+.icon-btn.active{color:var(--accent);border-color:var(--accent);background:#091a18;}
+
+/* CSS LANDSCAPE ROTATION FALLBACK
+   Applied when JS sets data-rotated="true" on <html>
+   (used when Screen Orientation API is unavailable, e.g. desktop browsers) */
+html[data-rotated="true"] body{
+  position:fixed;
+  top:0;left:0;right:auto;bottom:auto;
+  width:100vh;
+  height:100vw;
+  transform:rotate(90deg) translateY(-100%);
+  transform-origin:top left;
+  overflow:hidden;
+}
+
+html[data-rotated="true"] main{
+  grid-template-columns:1.15fr .85fr;
+}
+
 /* MAIN */
 main{
   flex:1;min-height:0;
@@ -420,17 +453,128 @@ main{
   .brow{margin-top:10px;}
 }
 
+@media (orientation:portrait){
+  main{grid-template-columns:1fr;}
+  .grp.score{
+    flex:1.25 1 0;
+    min-height:180px;
+  }
+  .grp.score .brow{
+    margin-top:0;
+    gap:6px;
+  }
+  .grp.score .brow:first-of-type{
+    flex:1.8;
+    flex-wrap:wrap;
+  }
+  .grp.score .brow:first-of-type .btn{
+    flex:1 1 calc(33.333% - 6px);
+    width:auto;
+    min-height:46px;
+  }
+  .grp.score .brow:first-of-type .bdiv{
+    display:none;
+  }
+  .grp.score .brow:last-of-type{
+    flex:.8;
+  }
+  .grp.score .brow:last-of-type .btn{
+    min-height:44px;
+  }
+  .grp.score .btn .lbl{
+    font-size:clamp(16px,5vw,20px);
+  }
+  .grp.score .brow:last-of-type .btn .lbl{
+    font-size:clamp(13px,4vw,16px);
+  }
+}
+
 @media (orientation:landscape) and (max-height:500px){
-  .sc-num{font-size:28px;}
-  .sc-time{font-size:20px;}
-  .sc-shot{font-size:16px;}
+  body{padding:3px;}
+  .app{gap:4px;}
+  .hdr{
+    height:34px;
+    min-height:34px;
+    padding:0 10px;
+    border-radius:14px;
+  }
+  .hdr-title{font-size:10px;letter-spacing:3px;}
+  .icon-btn,
+  .settings-btn{
+    width:28px;
+    height:28px;
+    border-radius:8px;
+    font-size:13px;
+  }
+  .hdr-right{gap:6px;}
+  .conn{font-size:9px;letter-spacing:1px;}
+  main{
+    grid-template-columns:1.15fr .85fr;
+    gap:6px;
+  }
+  .pane{gap:4px;}
+  .score-strip{
+    padding:3px 0;
+    border-radius:16px;
+  }
+  .sc-cell{padding:2px 0;gap:1px;}
+  .sc-tag{font-size:8px;letter-spacing:3px;}
+  .sc-num{font-size:24px;}
+  .sc-mid{padding:0 10px;gap:1px;}
+  .sc-time{font-size:18px;}
+  .sc-shot{font-size:14px;}
+  .sc-slbl,
+  .sc-foul{font-size:8px;letter-spacing:2px;}
+  .penalty-warn{font-size:7px;margin-top:0;}
+  .rpill{
+    min-width:52px;
+    padding:2px 6px;
+    font-size:8px;
+    letter-spacing:1px;
+  }
+  .period-row{
+    height:30px;
+    gap:4px;
+  }
+  .bq{border-radius:9px;font-size:11px;}
+  .grp{
+    padding:5px;
+    gap:4px;
+    border-radius:14px;
+  }
+  .grp-label{
+    font-size:8px;
+    letter-spacing:3px;
+    padding:0 1px;
+  }
+  .grp.score{
+    flex:2.2 1 0;
+    min-height:128px;
+  }
+  .grp.fouls{
+    flex:.8 1 0;
+    min-height:58px;
+  }
+  .grp.score .brow:first-of-type{flex:1.7;}
+  .grp.score .brow:last-of-type{flex:1;}
+  .grp.score .btn{
+    min-height:52px;
+    border-radius:14px;
+  }
+  .grp.score .btn .lbl{
+    font-size:clamp(18px,4.2vh,24px);
+  }
+  .grp.score .brow:last-of-type .btn .lbl{
+    font-size:clamp(13px,3.2vh,17px);
+  }
   .grp.timer .brow .btn,
   .grp.timer .brow .btn-toggle,
   .grp.shot .brow .btn,
   .grp.shot .brow .btn-toggle,
-  .grp.system .brow .btn{height:44px;}
-  .brow{margin-top:6px;}
-  .grp{padding:6px;}
+  .grp.system .brow .btn{min-height:44px;}
+  .brow{gap:5px;margin-top:0;}
+  .btn,
+  .btn-toggle{border-radius:10px;}
 }
 </style>
 </head>
@@ -500,6 +644,8 @@ main{
   <header class="hdr">
     <div class="hdr-title">⬡ SCOREBOARD</div>
     <div class="hdr-right">
+      <button class="icon-btn" id="fsBtn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
+      <button class="icon-btn" id="lsBtn" onclick="toggleLandscape()" title="Landscape">⟳</button>
       <button class="settings-btn" onclick="openSettings()" title="Settings">⚙</button>
       <div class="conn">
         <div class="conn-dot" id="dot"></div>
@@ -518,7 +664,6 @@ main{
           <div class="sc-tag h">HOME</div>
           <div class="sc-num" id="home">0</div>
           <div class="sc-foul">FOULS <b id="hf" class="">0</b></div>
-          <div class="penalty-warn" id="hf_warn">PENALTY</div>
         </div>
 
         <div class="sc-mid">
@@ -567,9 +712,9 @@ main{
       <div class="grp fouls">
         <div class="grp-label">FOULS</div>
         <div class="brow">
-          <button class="btn bw2 sH" onclick="addFoul('hf',1)"><span class="ico">⚑</span><span class="lbl">HOME</span></button>
+          <button class="btn bw2 sH" onclick="addFoul('hf',1)"><span class="ico">⚑ HOME</span><span class="lbl"></span></button>
           <button class="btn bw2 sHd" onclick="addFoul('hf',-1)"><span class="lbl">−1</span></button>
-          <button class="btn bw2 sG" onclick="addFoul('gf',1)"><span class="ico">⚑</span><span class="lbl">GUEST</span></button>
+          <button class="btn bw2 sG" onclick="addFoul('gf',1)"><span class="ico">⚑ GUEST</span><span class="lbl"></span></button>
           <button class="btn bw2 sGd" onclick="addFoul('gf',-1)"><span class="lbl">−1</span></button>
         </div>
       </div>
@@ -801,6 +946,75 @@ function applySettings(){
 G('settingsOverlay').addEventListener('click',function(e){
   if(e.target===this) closeSettings();
 });
+
+// ---- FULLSCREEN ----
+function toggleFullscreen(){
+  var btn=G('fsBtn');
+  if(!document.fullscreenElement){
+    (document.documentElement.requestFullscreen||
+     document.documentElement.webkitRequestFullscreen||
+     document.documentElement.mozRequestFullScreen||
+     document.documentElement.msRequestFullscreen
+    ).call(document.documentElement);
+  } else {
+    (document.exitFullscreen||
+     document.webkitExitFullscreen||
+     document.mozCancelFullScreen||
+     document.msExitFullscreen
+    ).call(document);
+  }
+}
+
+document.addEventListener('fullscreenchange',updateFsBtn);
+document.addEventListener('webkitfullscreenchange',updateFsBtn);
+function updateFsBtn(){
+  var on=!!(document.fullscreenElement||document.webkitFullscreenElement);
+  G('fsBtn').className='icon-btn'+(on?' active':'');
+  G('fsBtn').title=on?'Exit Fullscreen':'Fullscreen';
+  G('fsBtn').textContent=on?'⛶':'⛶';
+}
+
+// ---- LANDSCAPE ----
+var _landscapeOn=false;
+
+function toggleLandscape(){
+  setLandscapeMode(!_landscapeOn);
+}
+
+function setLandscapeButton(on){
+  _landscapeOn=on;
+  var btn=G('lsBtn');
+  btn.className='icon-btn'+(on?' active':'');
+  btn.title=on?'Exit Landscape':'Landscape';
+}
+
+function setLandscapeMode(on){
+  setLandscapeButton(on);
+
+  // Try Screen Orientation API first (mobile/tablet)
+  if(screen.orientation && screen.orientation.lock){
+    if(on){
+      screen.orientation.lock('landscape').catch(function(){
+        // Fallback: CSS rotation
+        applyCssRotation(true);
+      });
+    } else {
+      if(screen.orientation.unlock) screen.orientation.unlock();
+      applyCssRotation(false);
+    }
+  } else {
+    // Desktop: CSS rotation trick
+    applyCssRotation(on);
+  }
+}
+
+function applyCssRotation(on){
+  if(on){
+    document.documentElement.setAttribute('data-rotated','true');
+  } else {
+    document.documentElement.removeAttribute('data-rotated');
+  }
+}
 
 // ---- FIREBASE LISTENERS ----
 function startListeners(){
