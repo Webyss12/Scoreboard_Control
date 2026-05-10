@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soundboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap');
+
+:root {
+  --bg:       #0a0c10;
+  --surface:  #111318;
+  --border:   #1e2330;
+  --accent:   #00e5cc;
+  --accent2:  #f0a800;
+  --text:     #e0e6f0;
+  --muted:    #445566;
+  --danger:   #ff4455;
+  --green:    #30d060;
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+/* ── HEADER ─────────────────────────────── */
+.header {
+  background: linear-gradient(180deg, #0d1520 0%, #0a0c10 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+.header-left h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.header-left p {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vol-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+.vol-wrap input[type=range] {
+  width: 80px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.btn-add-slot {
+  background: linear-gradient(180deg, #1a2a1a, #101810);
+  border: 1px solid #2a4a2a;
+  color: var(--green);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+.btn-add-slot:active { transform: scale(0.96); filter: brightness(0.8); }
+
+/* ── GRID ───────────────────────────────── */
+.container { padding: 14px; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+@media (min-width: 480px) {
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 700px) {
+  .grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ── SOUND SLOT ─────────────────────────── */
+.slot {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.slot.playing {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(0,229,204,0.2);
+}
+.slot.empty {
+  border-style: dashed;
+  border-color: #1e2a30;
+}
+
+/* Play button area */
+.slot-play {
+  flex: 1;
+  padding: 18px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: inherit;
+  width: 100%;
+  min-height: 110px;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+  position: relative;
+}
+.slot-play:active { background: rgba(255,255,255,0.04); }
+
+.slot-emoji {
+  font-size: 28px;
+  line-height: 1;
+  transition: transform 0.15s;
+}
+.slot.playing .slot-emoji { animation: bounce 0.3s ease; }
+@keyframes bounce {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.slot-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.2;
+  word-break: break-word;
+}
+.slot.empty .slot-name { color: var(--muted); }
+
+/* Progress bar */
+.slot-progress {
+  height: 3px;
+  background: var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.slot-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  transition: width 0.1s linear;
+}
+.slot.playing .slot-progress-bar { background: var(--accent); }
+
+/* Bottom toolbar */
+.slot-toolbar {
+  display: flex;
+  border-top: 1px solid var(--border);
+}
+.slot-toolbar button {
+  flex: 1;
+  padding: 7px 4px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  transition: color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.slot-toolbar button:not(:last-child) {
+  border-right: 1px solid var(--border);
+}
+.slot-toolbar button:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.slot-toolbar .btn-upload { color: var(--accent2); }
+.slot-toolbar .btn-stop   { color: var(--danger); }
+.slot-toolbar .btn-del    { color: #ff4455; }
+.slot-toolbar .btn-loop.active { color: var(--accent); }
+
+/* Hidden file input */
+.file-input { display: none; }
+
+/* ── EDIT MODAL ─────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: #141820;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px 20px;
+  width: 90%;
+  max-width: 340px;
+  transform: translateY(20px);
+  transition: transform 0.2s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.modal label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+.modal input[type=text] {
+  width: 100%;
+  padding: 10px 12px;
+  background: #0d1018;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: 'Barlow', sans-serif;
+  margin-bottom: 14px;
+}
+.modal input[type=text]:focus { outline: none; border-color: var(--accent); }
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.emoji-btn {
+  font-size: 20px;
+  padding: 6px;
+  border-radius: 8px;
+  background: #0d1018;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  line-height: 1;
+}
+.emoji-btn:hover   { background: #1a2030; }
+.emoji-btn.selected { border-color: var(--accent); background: #0d2030; }
+
+.color-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.color-swatch {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.color-swatch:hover    { transform: scale(1.15); }
+.color-swatch.selected { border-color: #fff; transform: scale(1.15); }
+
+.modal-btns {
+  display: flex;
+  gap: 8px;
+}
+.modal-btns button {
+  flex: 1; padding: 10px;
+  border: none; border-radius: 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 2px; cursor: pointer;
+  transition: filter 0.15s;
+}
+.modal-btns button:active { filter: brightness(0.8); }
+.btn-cancel { background: #1a1e28; color: var(--muted); }
+.btn-save   { background: var(--accent); color: #000; }
+
+/* ── STOP ALL ───────────────────────────── */
+.stop-all-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  padding: 10px 14px;
+  background: #0a0c10ee;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  backdrop-filter: blur(8px);
+  z-index: 100;
+}
+.btn-stop-all {
+  flex: 1; padding: 13px;
+  border: none; border-radius: 8px;
+  background: linear-gradient(180deg, #3a0810, #200408);
+  color: var(--danger);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; font-weight: 900;
+  letter-spacing: 3px; cursor: pointer;
+  border-top: 1px solid #701020;
+  transition: filter 0.15s, transform 0.1s;
+}
+.btn-stop-all:active { transform: scale(0.98); filter: brightness(0.8); }
+.btn-clear-all {
+  padding: 13px 16px;
+  border: none; border-radius: 8px;
+  background: #1a1e28;
+  color: var(--muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 2px; cursor: pointer;
+  transition: filter 0.15s;
+}
+.btn-clear-all:active { filter: brightness(0.8); }
+
+/* ── EMPTY STATE ────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+.empty-state .big { font-size: 48px; margin-bottom: 12px; }
+.empty-state p {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.empty-state small { font-size: 11px; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ──────────────────────────── -->
+<div class="header">
+  <div class="header-left">
+    <h1>&#127925; Soundboard</h1>
+    <p>TAP TO PLAY · HOLD TO EDIT</p>
+  </div>
+  <div class="header-right">
+    <div class="vol-wrap">
+      <span>&#128266;</span>
+      <input type="range" id="volSlider" min="0" max="1" step="0.05" value="0.8">
+    </div>
+    <button class="btn-add-slot" onclick="addSlot()">+ ADD</button>
+  </div>
+</div>
+
+<!-- ── GRID ────────────────────────────── -->
+<div class="container">
+  <div class="grid" id="grid"></div>
+  <div class="empty-state" id="emptyState" style="display:none">
+    <div class="big">🎵</div>
+    <p>No sounds yet</p>
+    <small>Tap "+ ADD" to create your first sound button</small>
+  </div>
+</div>
+
+<!-- ── STOP ALL BAR ─────────────────────── -->
+<div class="stop-all-bar">
+  <button class="btn-stop-all" onclick="stopAll()">⏹ STOP ALL</button>
+  <button class="btn-clear-all" onclick="clearAll()">🗑 CLEAR</button>
+</div>
+
+<!-- ── EDIT MODAL ───────────────────────── -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>Edit Sound</h2>
+    <label>Button Name</label>
+    <input type="text" id="modalName" placeholder="e.g. AIR HORN" maxlength="20">
+    <label>Icon</label>
+    <div class="emoji-grid" id="emojiGrid"></div>
+    <label>Color</label>
+    <div class="color-grid" id="colorGrid"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">CANCEL</button>
+      <button class="btn-save"   onclick="saveModal()">SAVE</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ───────────────────────────────────────────────
+var slots    = [];      // array of slot data objects
+var audioMap = {};      // slotId -> AudioBuffer
+var sourceMap= {};      // slotId -> AudioBufferSourceNode (playing)
+var gainMap  = {};      // slotId -> GainNode
+var loopMap  = {};      // slotId -> bool
+var editingId= null;
+var audioCtx = null;
+
+var EMOJIS = [
+  '🔊','📣','🎺','🎷','🥁','🎸','🎹','🎵',
+  '🏀','⚽','🏈','🎾','🏐','⚾','🏉','🎯',
+  '🚨','⚠️','🔔','📢','💥','⚡','🔥','❄️',
+  '🎉','🥳','👏','🏆','🥇','🎊','💪','😱',
+  '🌟','✨','💫','🎶','🎤','🎧','📻','🕹️'
+];
+
+var COLORS = [
+  { name:'teal',   bg:'linear-gradient(160deg,#0d2a28,#061814)', border:'#1a5048', text:'#30e8cc' },
+  { name:'orange', bg:'linear-gradient(160deg,#2a1800,#180e00)', border:'#604010', text:'#f0a800' },
+  { name:'red',    bg:'linear-gradient(160deg,#2a0808,#180404)', border:'#601010', text:'#ff6060' },
+  { name:'blue',   bg:'linear-gradient(160deg,#081228,#040816)', border:'#102060', text:'#60a0ff' },
+  { name:'green',  bg:'linear-gradient(160deg,#082808,#041404)', border:'#105010', text:'#50d060' },
+  { name:'purple', bg:'linear-gradient(160deg,#180828,#0c0418)', border:'#401060', text:'#c060ff' },
+  { name:'yellow', bg:'linear-gradient(160deg,#282000,#181200)', border:'#604800', text:'#ffd040' },
+  { name:'pink',   bg:'linear-gradient(160deg,#280818,#18040e)', border:'#601040', text:'#ff60a0' },
+  { name:'gray',   bg:'linear-gradient(160deg,#1a1e28,#0e1018)', border:'#2a3040', text:'#8899aa' },
+];
+
+var selectedEmoji = '🔊';
+var selectedColor = 'teal';
+var modalSlotId   = null;
+
+// ── AUDIO CONTEXT ───────────────────────────────────────
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function getVol() {
+  return parseFloat(document.getElementById('volSlider').value);
+}
+
+// ── SLOT DATA ───────────────────────────────────────────
+function makeId() {
+  return 'slot_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+}
+
+function addSlot() {
+  var id = makeId();
+  slots.push({
+    id:    id,
+    name:  'SOUND ' + (slots.length + 1),
+    emoji: '🔊',
+    color: COLORS[slots.length % COLORS.length].name
+  });
+  loopMap[id] = false;
+  saveToStorage();
+  renderGrid();
+}
+
+function removeSlot(id) {
+  stopSlot(id);
+  slots = slots.filter(function(s){ return s.id !== id; });
+  delete audioMap[id];
+  delete loopMap[id];
+  removeAudioFromStorage(id);
+  saveToStorage();
+  renderGrid();
+}
+
+function clearAll() {
+  if (!confirm('Remove all sound buttons?')) return;
+  stopAll();
+  slots.forEach(function(s){ removeAudioFromStorage(s.id); });
+  slots = []; audioMap = {}; loopMap = {};
+  saveToStorage();
+  renderGrid();
+}
+
+// ── PLAY / STOP ─────────────────────────────────────────
+function playSlot(id) {
+  var buf = audioMap[id];
+  if (!buf) return;
+
+  // Stop if already playing
+  if (sourceMap[id]) { stopSlot(id); return; }
+
+  var ctx = getCtx();
+  var src = ctx.createBufferSource();
+  var gain = ctx.createGain();
+  gain.gain.value = getVol();
+  src.buffer = buf;
+  src.loop   = loopMap[id] || false;
+  src.connect(gain);
+  gain.connect(ctx.destination);
+  src.start();
+  sourceMap[id] = src;
+  gainMap[id]   = gain;
+
+  // Mark playing
+  var el = document.getElementById(id);
+  if (el) el.classList.add('playing');
+
+  // Progress bar
+  startProgress(id, buf.duration, src.loop);
+
+  src.onended = function() {
+    if (sourceMap[id] === src) {
+      delete sourceMap[id];
+      delete gainMap[id];
+      var el2 = document.getElementById(id);
+      if (el2) el2.classList.remove('playing');
+      stopProgress(id);
+    }
+  };
+}
+
+function stopSlot(id) {
+  if (sourceMap[id]) {
+    try { sourceMap[id].stop(); } catch(e){}
+    delete sourceMap[id];
+    delete gainMap[id];
+  }
+  var el = document.getElementById(id);
+  if (el) el.classList.remove('playing');
+  stopProgress(id);
+}
+
+function stopAll() {
+  slots.forEach(function(s){ stopSlot(s.id); });
+}
+
+// ── PROGRESS BAR ────────────────────────────────────────
+var progressTimers = {};
+
+function startProgress(id, duration, loop) {
+  stopProgress(id);
+  if (loop) return; // no progress bar for looping
+  var bar = document.getElementById('pb_' + id);
+  if (!bar) return;
+  var start = Date.now();
+  progressTimers[id] = setInterval(function() {
+    var pct = Math.min(100, (Date.now() - start) / (duration * 1000) * 100);
+    bar.style.width = pct + '%';
+    if (pct >= 100) stopProgress(id);
+  }, 80);
+}
+
+function stopProgress(id) {
+  clearInterval(progressTimers[id]);
+  delete progressTimers[id];
+  var bar = document.getElementById('pb_' + id);
+  if (bar) bar.style.width = '0%';
+}
+
+// ── FILE UPLOAD ─────────────────────────────────────────
+function triggerUpload(id) {
+  var inp = document.getElementById('fi_' + id);
+  if (inp) inp.click();
+}
+
+function onFileChange(id, input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var ctx = getCtx();
+    ctx.decodeAudioData(e.target.result.slice(0), function(buf) {
+      audioMap[id] = buf;
+      saveAudioToStorage(id, e.target.result);
+      // Auto-name from filename
+      var slot = slots.find(function(s){ return s.id === id; });
+      if (slot && slot.name.startsWith('SOUND ')) {
+        slot.name = file.name.replace(/\.[^.]+$/, '').toUpperCase().slice(0, 20);
+        saveToStorage();
+      }
+      renderGrid();
+    }, function(err) {
+      alert('Could not decode audio. Try MP3, WAV, or OGG.');
+    });
+  };
+  reader.readAsArrayBuffer(file);
+  input.value = ''; // allow re-upload same file
+}
+
+// ── LOOP TOGGLE ─────────────────────────────────────────
+function toggleLoop(id) {
+  loopMap[id] = !loopMap[id];
+  if (sourceMap[id]) sourceMap[id].loop = loopMap[id];
+  renderGrid();
+}
+
+// ── EDIT MODAL ──────────────────────────────────────────
+function openModal(id) {
+  var slot = slots.find(function(s){ return s.id === id; });
+  if (!slot) return;
+  modalSlotId   = id;
+  selectedEmoji = slot.emoji;
+  selectedColor = slot.color;
+  document.getElementById('modalName').value = slot.name;
+  renderEmojiGrid();
+  renderColorGrid();
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  modalSlotId = null;
+}
+
+function saveModal() {
+  var slot = slots.find(function(s){ return s.id === modalSlotId; });
+  if (!slot) return;
+  var nameVal = document.getElementById('modalName').value.trim().toUpperCase();
+  slot.name  = nameVal || slot.name;
+  slot.emoji = selectedEmoji;
+  slot.color = selectedColor;
+  saveToStorage();
+  renderGrid();
+  closeModal();
+}
+
+function renderEmojiGrid() {
+  var g = document.getElementById('emojiGrid');
+  g.innerHTML = '';
+  EMOJIS.forEach(function(em) {
+    var btn = document.createElement('button');
+    btn.className = 'emoji-btn' + (em === selectedEmoji ? ' selected' : '');
+    btn.textContent = em;
+    btn.onclick = function() {
+      selectedEmoji = em;
+      renderEmojiGrid();
+    };
+    g.appendChild(btn);
+  });
+}
+
+function renderColorGrid() {
+  var g = document.getElementById('colorGrid');
+  g.innerHTML = '';
+  COLORS.forEach(function(c) {
+    var sw = document.createElement('div');
+    sw.className = 'color-swatch' + (c.name === selectedColor ? ' selected' : '');
+    sw.style.background = c.text;
+    sw.onclick = function() {
+      selectedColor = c.name;
+      renderColorGrid();
+    };
+    g.appendChild(sw);
+  });
+}
+
+// Close modal on overlay click
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ── LONG PRESS DETECTION ────────────────────────────────
+var pressTimer = null;
+var pressId    = null;
+
+function onPressStart(id) {
+  pressId    = id;
+  pressTimer = setTimeout(function() {
+    pressTimer = null;
+    openModal(id);
+  }, 500);
+}
+
+function onPressEnd(id) {
+  if (pressTimer) {
+    clearTimeout(pressTimer);
+    pressTimer = null;
+    // Short tap = play
+    playSlot(id);
+  }
+}
+
+function onPressCancel() {
+  if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+}
+
+// ── RENDER ──────────────────────────────────────────────
+function renderGrid() {
+  var grid = document.getElementById('grid');
+  var empty = document.getElementById('emptyState');
+  grid.innerHTML = '';
+
+  if (slots.length === 0) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  slots.forEach(function(slot) {
+    var col   = COLORS.find(function(c){ return c.name === slot.color; }) || COLORS[0];
+    var hasAudio = !!audioMap[slot.id];
+    var isLoop   = loopMap[slot.id];
+
+    var el = document.createElement('div');
+    el.className = 'slot' + (hasAudio ? '' : ' empty');
+    el.id = slot.id;
+    el.style.background = col.bg;
+    el.style.borderColor = col.border;
+
+    el.innerHTML =
+      // Hidden file input
+      '<input type="file" class="file-input" id="fi_' + slot.id + '" accept="audio/*">' +
+
+      // Play area
+      '<button class="slot-play" id="sp_' + slot.id + '">' +
+        '<span class="slot-emoji">' + slot.emoji + '</span>' +
+        '<span class="slot-name" style="color:' + col.text + '">' +
+          (hasAudio ? slot.name : '+ UPLOAD AUDIO') +
+        '</span>' +
+      '</button>' +
+
+      // Progress bar
+      '<div class="slot-progress"><div class="slot-progress-bar" id="pb_' + slot.id + '"></div></div>' +
+
+      // Toolbar
+      '<div class="slot-toolbar">' +
+        '<button class="btn-upload" onclick="triggerUpload(\'' + slot.id + '\')">&#128190; LOAD</button>' +
+        '<button class="btn-loop ' + (isLoop ? 'active' : '') + '" onclick="toggleLoop(\'' + slot.id + '\')">' +
+          (isLoop ? '&#9854; LOOP' : '&#9854;') +
+        '</button>' +
+        '<button class="btn-stop" onclick="stopSlot(\'' + slot.id + '\')">&#9646;&#9646;</button>' +
+        '<button class="btn-del"  onclick="removeSlot(\'' + slot.id + '\')">&#10005;</button>' +
+      '</div>';
+
+    // File input listener
+    el.querySelector('#fi_' + slot.id).addEventListener('change', function() {
+      onFileChange(slot.id, this);
+    });
+
+    // Play button — long press to edit, tap to play
+    var playBtn = el.querySelector('#sp_' + slot.id);
+    playBtn.addEventListener('mousedown',  function(){ onPressStart(slot.id); });
+    playBtn.addEventListener('mouseup',    function(){ onPressEnd(slot.id); });
+    playBtn.addEventListener('mouseleave', onPressCancel);
+    playBtn.addEventListener('touchstart', function(e){ e.preventDefault(); onPressStart(slot.id); }, {passive:false});
+    playBtn.addEventListener('touchend',   function(e){ e.preventDefault(); onPressEnd(slot.id); });
+    playBtn.addEventListener('touchcancel',onPressCancel);
+
+    grid.appendChild(el);
+  });
+}
+
+// ── STORAGE (IndexedDB for audio, localStorage for metadata) ──
+var DB_NAME    = 'soundboard_db';
+var DB_VERSION = 1;
+var db_idb     = null;
+
+function openIDB(cb) {
+  if (db_idb) { cb(db_idb); return; }
+  var req = indexedDB.open(DB_NAME, DB_VERSION);
+  req.onupgradeneeded = function(e) {
+    e.target.result.createObjectStore('audio');
+  };
+  req.onsuccess = function(e) {
+    db_idb = e.target.result;
+    cb(db_idb);
+  };
+  req.onerror = function() { console.warn('IndexedDB unavailable'); };
+}
+
+function saveAudioToStorage(id, arrayBuffer) {
+  openIDB(function(db) {
+    var tx    = db.transaction('audio', 'readwrite');
+    var store = tx.objectStore('audio');
+    store.put(arrayBuffer, id);
+  });
+}
+
+function removeAudioFromStorage(id) {
+  openIDB(function(db) {
+    var tx = db.transaction('audio', 'readwrite');
+    tx.objectStore('audio').delete(id);
+  });
+}
+
+function loadAudioFromStorage(id, cb) {
+  openIDB(function(db) {
+    var tx  = db.transaction('audio', 'readonly');
+    var req = tx.objectStore('audio').get(id);
+    req.onsuccess = function() {
+      if (req.result) cb(req.result);
+    };
+  });
+}
+
+function saveToStorage() {
+  try {
+    localStorage.setItem('sb_slots',   JSON.stringify(slots));
+    localStorage.setItem('sb_loops',   JSON.stringify(loopMap));
+  } catch(e) {}
+}
+
+function loadFromStorage() {
+  try {
+    var s = localStorage.getItem('sb_slots');
+    var l = localStorage.getItem('sb_loops');
+    if (s) slots   = JSON.parse(s);
+    if (l) loopMap = JSON.parse(l);
+  } catch(e) {}
+
+  // Reload audio buffers from IndexedDB
+  slots.forEach(function(slot) {
+    loadAudioFromStorage(slot.id, function(ab) {
+      var ctx = getCtx();
+      ctx.decodeAudioData(ab.slice(0), function(buf) {
+        audioMap[slot.id] = buf;
+        renderGrid();
+      });
+    });
+  });
+}
+
+// ── INIT ────────────────────────────────────────────────
+loadFromStorage();
+renderGrid();
+
+// If no slots saved, add 4 empty ones to start
+if (slots.length === 0) {
+  for (var i = 0; i < 4; i++) addSlot();
+}
+</script>
+</body>
+</html>
