@@ -130,6 +130,132 @@ html[data-rotated="true"] body{
 
 html[data-rotated="true"] main{
   grid-template-columns:1.15fr .85fr;
+  gap:6px;
+}
+
+html[data-rotated="true"] main > .pane:first-child{
+  display:grid;
+  grid-template-rows:minmax(82px,1fr) 32px minmax(72px,.9fr) minmax(52px,.65fr);
+  gap:4px;
+}
+
+html[data-rotated="true"] .hdr{
+  height:34px;
+  min-height:34px;
+  padding:0 10px;
+  border-radius:14px;
+}
+
+html[data-rotated="true"] .hdr-title{
+  font-size:10px;
+  letter-spacing:3px;
+}
+
+html[data-rotated="true"] .icon-btn,
+html[data-rotated="true"] .settings-btn{
+  width:28px;
+  height:28px;
+  border-radius:8px;
+  font-size:13px;
+}
+
+html[data-rotated="true"] .hdr-right{gap:6px;}
+html[data-rotated="true"] .conn{font-size:9px;letter-spacing:1px;}
+
+html[data-rotated="true"] .pane{gap:4px;}
+
+html[data-rotated="true"] .score-strip{
+  min-height:0;
+  height:100%;
+  padding:3px 0;
+  border-radius:16px;
+}
+
+html[data-rotated="true"] .sc-cell{
+  min-height:0;
+  padding:1px 0;
+  gap:0;
+}
+
+html[data-rotated="true"] .sc-mid{
+  min-height:0;
+  padding:0 8px;
+  gap:0;
+}
+
+html[data-rotated="true"] .sc-tag{font-size:8px;letter-spacing:3px;}
+html[data-rotated="true"] .sc-num{font-size:24px;}
+html[data-rotated="true"] .sc-time{font-size:18px;}
+html[data-rotated="true"] .sc-shot{font-size:14px;}
+html[data-rotated="true"] .sc-slbl,
+html[data-rotated="true"] .sc-foul{font-size:8px;letter-spacing:2px;}
+html[data-rotated="true"] .rpill{
+  min-width:50px;
+  padding:1px 6px;
+  font-size:8px;
+  letter-spacing:1px;
+}
+
+html[data-rotated="true"] .period-row{
+  height:32px;
+  gap:4px;
+}
+
+html[data-rotated="true"] .bq{
+  border-radius:9px;
+  font-size:11px;
+}
+
+html[data-rotated="true"] .grp{
+  min-height:0;
+  padding:5px;
+  gap:4px;
+  border-radius:14px;
+}
+
+html[data-rotated="true"] .grp-label{
+  font-size:8px;
+  letter-spacing:3px;
+  padding:0 1px;
+}
+
+html[data-rotated="true"] .grp.score{
+  min-height:0;
+}
+
+html[data-rotated="true"] .grp.score .brow:first-of-type{
+  flex-wrap:nowrap;
+}
+
+html[data-rotated="true"] .grp.score .brow:first-of-type .btn{
+  flex:1;
+  width:0;
+  min-height:0;
+}
+
+html[data-rotated="true"] .grp.score .brow:first-of-type .bdiv{
+  display:block;
+}
+
+html[data-rotated="true"] .grp.fouls{
+  min-height:0;
+}
+
+html[data-rotated="true"] .grp.fouls .btn,
+html[data-rotated="true"] .grp.timer .btn-toggle,
+html[data-rotated="true"] .grp.shot .btn,
+html[data-rotated="true"] .grp.shot .btn-toggle{
+  min-height:0;
+}
+
+html[data-rotated="true"] .brow{
+  gap:5px;
+  margin-top:0;
+}
+
+html[data-rotated="true"] .btn,
+html[data-rotated="true"] .btn-toggle{
+  border-radius:10px;
 }
 
 /* MAIN */
@@ -512,15 +638,22 @@ main{
     grid-template-columns:1.15fr .85fr;
     gap:6px;
   }
+  main > .pane:first-child{
+    display:grid;
+    grid-template-rows:minmax(82px,1fr) 32px minmax(72px,.9fr) minmax(52px,.65fr);
+    gap:4px;
+  }
   .pane{gap:4px;}
   .score-strip{
+    min-height:0;
+    height:100%;
     padding:3px 0;
     border-radius:16px;
   }
-  .sc-cell{padding:2px 0;gap:1px;}
+  .sc-cell{min-height:0;padding:1px 0;gap:0;}
+  .sc-mid{min-height:0;padding:0 8px;gap:0;}
   .sc-tag{font-size:8px;letter-spacing:3px;}
   .sc-num{font-size:24px;}
-  .sc-mid{padding:0 10px;gap:1px;}
   .sc-time{font-size:18px;}
   .sc-shot{font-size:14px;}
   .sc-slbl,
@@ -533,11 +666,12 @@ main{
     letter-spacing:1px;
   }
   .period-row{
-    height:30px;
+    height:32px;
     gap:4px;
   }
   .bq{border-radius:9px;font-size:11px;}
   .grp{
+    min-height:0;
     padding:5px;
     gap:4px;
     border-radius:14px;
@@ -548,17 +682,15 @@ main{
     padding:0 1px;
   }
   .grp.score{
-    flex:2.2 1 0;
-    min-height:128px;
+    min-height:0;
   }
   .grp.fouls{
-    flex:.8 1 0;
-    min-height:58px;
+    min-height:0;
   }
   .grp.score .brow:first-of-type{flex:1.7;}
   .grp.score .brow:last-of-type{flex:1;}
   .grp.score .btn{
-    min-height:52px;
+    min-height:0;
     border-radius:14px;
   }
   .grp.score .btn .lbl{
@@ -571,7 +703,8 @@ main{
   .grp.timer .brow .btn-toggle,
   .grp.shot .brow .btn,
   .grp.shot .brow .btn-toggle,
-  .grp.system .brow .btn{min-height:44px;}
+  .grp.system .brow .btn{min-height:0;}
+  .grp.fouls .brow .btn{min-height:0;}
   .brow{gap:5px;margin-top:0;}
   .btn,
   .btn-toggle{border-radius:10px;}
@@ -664,6 +797,7 @@ main{
           <div class="sc-tag h">HOME</div>
           <div class="sc-num" id="home">0</div>
           <div class="sc-foul">FOULS <b id="hf" class="">0</b></div>
+          <div class="penalty-warn" id="hf_warn">PENALTY</div>
         </div>
 
         <div class="sc-mid">
@@ -785,6 +919,7 @@ var _shotRunning=false;
 
 function G(id){return document.getElementById(id);}
 function pad(n){return String(n).padStart(2,'0');}
+function asBool(v){return v===true||v===1||v==='true'||v==='1';}
 
 var _tt;
 function toast(msg,err){
@@ -806,9 +941,23 @@ function addFoul(f,v){
 
 // ---- TIMER TOGGLE ----
 function toggleTimer(){
-  var newState=!_timerRunning;
-  scoreRef.child("timerRun").set(newState);
-  toast(newState?"TIMER START":"TIMER PAUSE");
+  var newState=!(_timerRunning&&_shotRunning);
+  _timerRunning=newState;
+  _shotRunning=newState;
+  updateTimerToggleUI(newState);
+  updateShotToggleUI(newState);
+  pill('timerBadge',newState);
+  pill('shotBadge',newState);
+  scoreRef.update({timerRun:newState,shotRun:newState}).catch(function(){
+    _timerRunning=!newState;
+    _shotRunning=!newState;
+    updateTimerToggleUI(_timerRunning);
+    updateShotToggleUI(_shotRunning);
+    pill('timerBadge',_timerRunning);
+    pill('shotBadge',_shotRunning);
+    toast("TIMER ERROR",true);
+  });
+  toast(newState?"CLOCKS START":"CLOCKS PAUSE");
 }
 
 function updateTimerToggleUI(running){
@@ -828,9 +977,23 @@ function updateTimerToggleUI(running){
 
 // ---- SHOT TOGGLE ----
 function toggleShot(){
-  var newState=!_shotRunning;
-  scoreRef.child("shotRun").set(newState);
-  toast(newState?"SHOT ON":"SHOT OFF");
+  var newState=!(_timerRunning&&_shotRunning);
+  _timerRunning=newState;
+  _shotRunning=newState;
+  updateTimerToggleUI(newState);
+  updateShotToggleUI(newState);
+  pill('timerBadge',newState);
+  pill('shotBadge',newState);
+  scoreRef.update({timerRun:newState,shotRun:newState}).catch(function(){
+    _timerRunning=!newState;
+    _shotRunning=!newState;
+    updateTimerToggleUI(_timerRunning);
+    updateShotToggleUI(_shotRunning);
+    pill('timerBadge',_timerRunning);
+    pill('shotBadge',_shotRunning);
+    toast("SHOT ERROR",true);
+  });
+  toast(newState?"CLOCKS START":"CLOCKS PAUSE");
 }
 
 function updateShotToggleUI(running){
@@ -849,7 +1012,7 @@ function updateShotToggleUI(running){
 }
 
 function resetShot(v){
-  scoreRef.update({shot:v,shotRun:true});
+  scoreRef.update({shot:v,shotRun:_timerRunning});
   toast(v+"s");
 }
 
@@ -887,14 +1050,15 @@ function pill(id,on){
 
 // ---- FOUL PENALTY CHECK ----
 function checkFoulPenalty(foulEl,warnEl,count){
+  if(!foulEl) return;
   if(count>=cfg.foulLimit){
     foulEl.textContent='P';
     foulEl.classList.add('penalty');
-    warnEl.classList.add('show');
+    if(warnEl) warnEl.classList.add('show');
   } else {
     foulEl.textContent=count;
     foulEl.classList.remove('penalty');
-    warnEl.classList.remove('show');
+    if(warnEl) warnEl.classList.remove('show');
   }
 }
 
@@ -931,7 +1095,8 @@ function applySettings(){
   scoreRef.update({
     minutes:cfg.defaultMin,
     seconds:cfg.defaultSec,
-    timerRun:false
+    timerRun:false,
+    shotRun:false
   });
 
   // Update preset button labels
@@ -1036,8 +1201,9 @@ function startListeners(){
     var ss=d.seconds!==undefined?d.seconds:cfg.defaultSec;
     G('time').textContent=pad(mm)+":"+pad(ss);
 
-    _timerRunning=!!d.timerRun;
-    _shotRunning=!!d.shotRun;
+    var clocksRunning=asBool(d.timerRun)&&asBool(d.shotRun);
+    _timerRunning=clocksRunning;
+    _shotRunning=clocksRunning;
 
     pill('timerBadge',_timerRunning);
     pill('shotBadge',_shotRunning);
