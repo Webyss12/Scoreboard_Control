@@ -2,58 +2,38 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Scoreboard Controller</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
 <style>
-
-*,*::before,*::after{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
 html,body{
-  width:100%;
-  height:100%;
+  width:100%;height:100%;
   overflow:hidden;
   touch-action:manipulation;
   overscroll-behavior:none;
+  position:fixed;top:0;left:0;right:0;bottom:0;
 }
 
 :root{
-
   --bg:#05070c;
   --surface:#0a0f18;
   --surface2:#101827;
-
   --border:#1a2433;
   --border2:#243247;
-
   --text:#d9e4f2;
   --muted:#5c6d81;
-
   --accent:#00e6c3;
-
   --home:#ff5656;
   --guest:#4f82ff;
-
   --green:#39e273;
   --amber:#ffb400;
   --danger:#ff3e52;
-
   --radius:18px;
-  --gap:8px;
-
-  --bw:58px;
-  --bh:48px;
+  --gap:6px;
 }
 
 body{
@@ -62,989 +42,811 @@ body{
   font-family:'Rajdhani',sans-serif;
   display:flex;
   justify-content:center;
-  align-items:center;
-  padding:6px;
-  overflow:hidden;
+  align-items:stretch;
+  padding:5px;
 }
 
 .app{
-  width:100%;
-  max-width:1400px;
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+  width:100%;max-width:1400px;
+  display:flex;flex-direction:column;
+  gap:6px;
   overflow:hidden;
+  height:100%;
 }
 
 /* HEADER */
-
 .hdr{
-  flex:0 0 54px;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:space-between;
   background:linear-gradient(180deg,#09111b,#070d15);
-
   border:1px solid var(--border);
-  border-radius:22px;
-
-  padding:0 18px;
+  border-radius:18px;
+  padding:0 14px;
+  height:46px;
+  min-height:46px;
 }
 
 .hdr-title{
   font-family:'Orbitron',monospace;
-  font-size:16px;
-  font-weight:700;
-  letter-spacing:5px;
+  font-size:clamp(11px,2vw,15px);
+  font-weight:700;letter-spacing:4px;
   color:var(--accent);
 }
 
+.hdr-right{display:flex;align-items:center;gap:10px;}
+
 .conn{
-  display:flex;
-  align-items:center;
-  gap:8px;
-
-  font-size:11px;
-  letter-spacing:2px;
-  color:var(--green);
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;letter-spacing:2px;color:var(--green);
 }
-
 .conn-dot{
-  width:10px;
-  height:10px;
-  border-radius:50%;
+  width:8px;height:8px;border-radius:50%;
   background:var(--green);
-  box-shadow:0 0 12px var(--green);
+  box-shadow:0 0 10px var(--green);
 }
+
+/* SETTINGS BUTTON */
+.settings-btn{
+  width:34px;height:34px;
+  border:1px solid var(--border2);
+  border-radius:10px;
+  background:#0c1420;
+  color:var(--muted);
+  font-size:16px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:.15s;
+}
+.settings-btn:hover{color:var(--accent);border-color:var(--accent);}
 
 /* MAIN */
-
 main{
-  flex:1;
-  min-height:0;
-
+  flex:1;min-height:0;
   display:grid;
   grid-template-columns:1.15fr .85fr;
-  gap:10px;
-
+  gap:8px;
   overflow:hidden;
 }
 
 /* PANES */
-
 .pane{
   min-height:0;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+  display:flex;flex-direction:column;
+  gap:6px;
   overflow:hidden;
 }
 
 /* SCORE STRIP */
-
 .score-strip{
-  flex:0 0 155px;
-
+  flex:0 0 auto;
   display:grid;
   grid-template-columns:1fr auto 1fr;
-
   background:linear-gradient(180deg,#09111b,#060b12);
-
   border:1px solid var(--border);
-  border-radius:26px;
-
+  border-radius:22px;
   overflow:hidden;
+  padding:8px 0;
 }
 
 .sc-cell{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:4px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:2px;padding:6px 0;
 }
+.sc-cell.hc{border-right:1px solid var(--border);}
+.sc-cell.gc{border-left:1px solid var(--border);}
 
-.sc-cell.hc{
-  border-right:1px solid var(--border);
-}
-
-.sc-cell.gc{
-  border-left:1px solid var(--border);
-}
-
-.sc-tag{
-  font-family:'Orbitron',monospace;
-  font-size:12px;
-  letter-spacing:5px;
-}
-
-.sc-tag.h{
-  color:var(--home);
-}
-
-.sc-tag.g{
-  color:var(--guest);
-}
-
-.sc-tag.m{
-  color:var(--accent);
-}
+.sc-tag{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:4px;}
+.sc-tag.h{color:var(--home);}
+.sc-tag.g{color:var(--guest);}
+.sc-tag.m{color:var(--accent);}
 
 .sc-num{
   font-family:'Orbitron',monospace;
-  font-size:72px;
-  font-weight:900;
-  line-height:1;
-  color:white;
+  font-size:clamp(32px,5vw,58px);
+  font-weight:900;line-height:1;color:white;
 }
 
 .sc-mid{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-
-  gap:6px;
-  padding:0 32px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:2px;padding:0 16px;
 }
-
 .sc-time{
   font-family:'Orbitron',monospace;
-  font-size:42px;
-  font-weight:900;
-  color:var(--amber);
+  font-size:clamp(22px,3.5vw,36px);
+  font-weight:900;color:var(--amber);
 }
-
 .sc-shot{
   font-family:'Orbitron',monospace;
-  font-size:32px;
-  font-weight:900;
-  color:var(--guest);
+  font-size:clamp(16px,2.5vw,26px);
+  font-weight:900;color:var(--guest);
 }
+.sc-slbl{font-size:10px;letter-spacing:3px;color:var(--muted);}
+.sc-foul{font-size:9px;letter-spacing:3px;color:var(--muted);}
+.sc-foul b{color:var(--amber);font-size:clamp(12px,2vw,18px);}
+.sc-foul b.penalty{color:var(--danger);animation:blink .6s infinite;}
 
-.sc-slbl{
-  font-size:11px;
-  letter-spacing:4px;
-  color:var(--muted);
-}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
 
-.sc-foul{
-  font-size:11px;
-  letter-spacing:4px;
-  color:var(--muted);
+.penalty-warn{
+  font-size:8px;letter-spacing:2px;
+  color:var(--danger);
+  display:none;
 }
-
-.sc-foul b{
-  color:var(--amber);
-  font-size:22px;
-}
+.penalty-warn.show{display:block;}
 
 .rpill{
-  min-width:90px;
-  text-align:center;
-
-  padding:5px 10px;
-
-  border-radius:999px;
-
+  min-width:70px;text-align:center;
+  padding:3px 8px;border-radius:999px;
   border:1px solid var(--border2);
-
-  font-size:11px;
-  letter-spacing:3px;
-
-  color:var(--muted);
-
-  background:#0a121d;
+  font-size:10px;letter-spacing:2px;
+  color:var(--muted);background:#0a121d;
 }
-
-.rpill.on{
-  color:var(--green);
-  border-color:#1b5832;
-}
+.rpill.on{color:var(--green);border-color:#1b5832;}
 
 /* PERIOD */
-
 .period-row{
-  flex:0 0 54px;
-
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
+  flex:0 0 auto;
+  height:clamp(38px,6vh,54px);
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:6px;
 }
 
 .bq{
-  border:none;
-  border-radius:14px;
-
-  background:#0c1420;
-  border:1px solid var(--border2);
-
+  border:none;border-radius:12px;
+  background:#0c1420;border:1px solid var(--border2);
   color:#7c8ca1;
-
   font-family:'Orbitron',monospace;
-  font-size:16px;
-
-  cursor:pointer;
+  font-size:clamp(11px,2vw,16px);
+  cursor:pointer;transition:.1s;
 }
-
 .bq.active{
-  background:#0b2223;
-  border-color:var(--accent);
-  color:var(--accent);
-  box-shadow:0 0 12px rgba(0,230,195,.15);
+  background:#0b2223;border-color:var(--accent);
+  color:var(--accent);box-shadow:0 0 10px rgba(0,230,195,.15);
 }
 
 /* GROUPS */
-
 .grp{
   background:linear-gradient(180deg,#09111b,#060b12);
-
   border:1px solid var(--border);
-
-  border-radius:24px;
-
-  padding:14px;
-
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:12px;
-
-  position:relative;
+  border-radius:20px;
+  padding:8px;
+  display:flex;flex-direction:column;
+  gap:6px;
   overflow:hidden;
+  flex:1;min-height:0;
 }
 
-.grp::before{
-  content:attr(data-label);
-
-  position:absolute;
-  top:10px;
-  left:16px;
-
+.grp-label{
   font-family:'Orbitron',monospace;
-  font-size:11px;
-  letter-spacing:5px;
-
-  color:#5f7288;
-}
-
-/* LEFT GROUP SIZES */
-
-.grp.score{
-  flex:1.2;
-}
-
-.grp.fouls{
-  flex:.7;
-}
-
-/* RIGHT GROUP SIZES */
-
-.grp.timer{
-  flex:1.1;
-}
-
-.grp.shot{
-  flex:.85;
-}
-
-.grp.system{
-  flex:.9;
+  font-size:10px;letter-spacing:4px;color:#5f7288;
+  flex:0 0 auto;
+  padding:2px 2px 0;
 }
 
 /* ROWS */
-
 .brow{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  margin-top:18px;
+  display:flex;align-items:stretch;justify-content:center;
+  gap:6px;
+  flex:1;min-height:0;
 }
-
-.bdiv{
-  width:1px;
-  height:42px;
-  background:var(--border2);
-}
+.bdiv{width:1px;align-self:stretch;background:var(--border2);}
 
 /* BUTTONS */
-
 .btn{
-  width:var(--bw);
-  height:var(--bh);
-
-  border:none;
-  border-radius:14px;
-
-  font-family:'Rajdhani',sans-serif;
-  font-weight:700;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-
-  gap:2px;
-
-  cursor:pointer;
-  user-select:none;
-
+  min-width:0;width:0;
+  border:none;border-radius:12px;
+  font-family:'Rajdhani',sans-serif;font-weight:700;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:1px;cursor:pointer;user-select:none;
   transition:.12s;
-}
-
-.btn:active{
-  transform:scale(.92);
-}
-
-.btn .lbl{
-  font-size:16px;
-}
-
-.btn .sub{
-  font-size:8px;
-  letter-spacing:1px;
-}
-
-.btn .ico{
-  font-size:16px;
-}
-
-.bw2{
+  padding:0 4px;
   flex:1;
 }
+.btn:active{transform:scale(.92);}
+.btn .lbl{font-size:clamp(11px,1.6vw,15px);}
+.btn .sub{font-size:8px;letter-spacing:1px;}
+.btn .ico{font-size:clamp(11px,1.6vw,15px);}
+.bw2{flex:2;}
 
-/* COLORS */
-
-.sH{
-  background:linear-gradient(180deg,#701414,#521010);
-  color:#ff7070;
+/* TOGGLE BUTTON */
+.btn-toggle{
+  flex:1;min-width:0;width:0;
+  border:none;border-radius:12px;
+  font-family:'Rajdhani',sans-serif;font-weight:700;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:1px;cursor:pointer;user-select:none;
+  transition:.15s;
 }
+.btn-toggle:active{transform:scale(.93);}
+.btn-toggle .lbl{font-size:clamp(12px,2vw,15px);}
+.btn-toggle .ico{font-size:clamp(13px,2vw,16px);}
 
-.sHd{
-  background:linear-gradient(180deg,#501010,#340909);
-  color:#ff9c9c;
+.btn-toggle.running{
+  background:linear-gradient(180deg,#8a1f1f,#6a1212);
+  color:#ff8d8d;
 }
-
-.sG{
-  background:linear-gradient(180deg,#143174,#102356);
-  color:#7ca4ff;
-}
-
-.sGd{
-  background:linear-gradient(180deg,#102456,#0a1739);
-  color:#a4c1ff;
-}
-
-.sSt{
+.btn-toggle.stopped{
   background:linear-gradient(180deg,#167330,#0d5521);
   color:#7effa7;
 }
 
-.sPa{
-  background:linear-gradient(180deg,#8a1f1f,#6a1212);
-  color:#ff8d8d;
-}
+/* Score group row ratios */
+.grp.score .brow:first-of-type{flex:1.6;}
+.grp.score .brow:last-of-type{flex:1;}
 
-.sSh{
-  background:linear-gradient(180deg,#1a3d93,#112a6a);
-  color:#a7c0ff;
-}
-
-.sNe{
-  background:linear-gradient(180deg,#1d2735,#151d29);
-  color:#b9c3d2;
-}
-
-.sAm{
-  background:linear-gradient(180deg,#8a6300,#634600);
-  color:#ffd15f;
-}
-
-.sAc{
-  background:linear-gradient(180deg,#0b6a55,#07463a);
-  color:#6dffd9;
-}
-
-.sDa{
-  background:linear-gradient(180deg,#90121f,#6d0d17);
-  color:#ff9ba5;
-}
-
-/* TIMER INPUTS */
-
-.setrow{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-
-  margin-top:14px;
-}
-
-.setrow input{
-  width:120px;
-  height:90px;
-
-  background:#050b14;
-
-  border:1px solid var(--border2);
-  border-radius:18px;
-
-  color:var(--amber);
-
-  font-family:'Orbitron',monospace;
-  font-size:42px;
-  font-weight:900;
-
-  text-align:center;
-}
-
-.setrow input:focus{
-  outline:none;
-  border-color:var(--amber);
-}
-
-.col{
-  font-size:42px;
-  color:var(--amber);
-  font-family:'Orbitron',monospace;
-}
-
-.btn-set{
-  width:140px;
-  height:90px;
-
-  border:none;
-  border-radius:18px;
-
-  background:linear-gradient(180deg,#8a6300,#6a4b00);
-
-  color:#ffd66d;
-
-  font-family:'Orbitron',monospace;
-  font-size:28px;
+/* Shot clock preset label size */
+.grp.shot .brow .btn .lbl{
+  font-size:clamp(14px,2vw,20px);
   font-weight:700;
-
-  cursor:pointer;
 }
 
-/* BIG BUTTONS */
+/* COLORS */
+.sH{background:linear-gradient(180deg,#701414,#521010);color:#ff7070;}
+.sHd{background:linear-gradient(180deg,#501010,#340909);color:#ff9c9c;}
+.sG{background:linear-gradient(180deg,#143174,#102356);color:#7ca4ff;}
+.sGd{background:linear-gradient(180deg,#102456,#0a1739);color:#a4c1ff;}
+.sSt{background:linear-gradient(180deg,#167330,#0d5521);color:#7effa7;}
+.sPa{background:linear-gradient(180deg,#8a1f1f,#6a1212);color:#ff8d8d;}
+.sSh{background:linear-gradient(180deg,#1a3d93,#112a6a);color:#a7c0ff;}
+.sNe{background:linear-gradient(180deg,#1d2735,#151d29);color:#b9c3d2;}
+.sAm{background:linear-gradient(180deg,#8a6300,#634600);color:#ffd15f;}
+.sAc{background:linear-gradient(180deg,#0b6a55,#07463a);color:#6dffd9;}
+.sDa{background:linear-gradient(180deg,#90121f,#6d0d17);color:#ff9ba5;}
 
-.grp.timer .bw2,
-.grp.system .bw2{
-  height:82px;
-}
 
-.grp.shot .btn{
-  flex:1;
-  height:82px;
-}
 
 /* TOAST */
-
 .toast{
-  position:fixed;
-
-  bottom:20px;
-  left:50%;
-
+  position:fixed;bottom:16px;left:50%;
   transform:translateX(-50%) translateY(80px);
+  background:#0c2417;border:1px solid #1b5c36;
+  color:#7effa7;padding:8px 16px;
+  border-radius:999px;font-size:11px;letter-spacing:3px;
+  opacity:0;transition:.2s;z-index:999;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.err{background:#341018;border-color:#6d1824;color:#ff7b8a;}
 
-  background:#0c2417;
-  border:1px solid #1b5c36;
+/* =================== SETTINGS OVERLAY =================== */
+.settings-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(6px);
+  z-index:200;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+.settings-overlay.open{display:flex;}
 
-  color:#7effa7;
-
-  padding:10px 18px;
-
-  border-radius:999px;
-
-  font-size:12px;
-  letter-spacing:3px;
-
-  opacity:0;
-  transition:.2s;
-
-  z-index:999;
+.settings-panel{
+  background:linear-gradient(180deg,#0c1522,#080f1a);
+  border:1px solid var(--border2);
+  border-radius:24px;
+  width:100%;max-width:480px;
+  max-height:90vh;
+  overflow-y:auto;
+  padding:24px;
+  display:flex;flex-direction:column;gap:20px;
 }
 
-.toast.show{
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
+.settings-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+}
+.settings-title{
+  font-family:'Orbitron',monospace;
+  font-size:14px;letter-spacing:5px;color:var(--accent);
+}
+.close-btn{
+  width:32px;height:32px;
+  border:1px solid var(--border2);border-radius:10px;
+  background:#0c1420;color:var(--muted);
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.close-btn:hover{color:var(--danger);border-color:var(--danger);}
+
+.settings-section{
+  display:flex;flex-direction:column;gap:10px;
+}
+.settings-section-title{
+  font-family:'Orbitron',monospace;
+  font-size:10px;letter-spacing:4px;color:var(--muted);
+  border-bottom:1px solid var(--border);
+  padding-bottom:6px;
 }
 
-.toast.err{
-  background:#341018;
-  border-color:#6d1824;
-  color:#ff7b8a;
+.settings-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;
+}
+.settings-row label{
+  font-size:13px;letter-spacing:2px;color:var(--text);flex:1;
 }
 
-/* MOBILE PORTRAIT */
+.s-input-group{
+  display:flex;align-items:center;gap:6px;
+}
+.s-input-group input{
+  width:64px;height:40px;
+  background:#050b14;
+  border:1px solid var(--border2);border-radius:10px;
+  color:var(--amber);
+  font-family:'Orbitron',monospace;font-size:18px;font-weight:700;
+  text-align:center;
+}
+.s-input-group input:focus{outline:none;border-color:var(--amber);}
+.s-input-group input.blue{color:var(--guest);}
+.s-input-group input.blue:focus{border-color:var(--guest);}
+.s-input-group input.red{color:var(--danger);}
+.s-input-group input.red:focus{border-color:var(--danger);}
+.s-input-group span{font-size:12px;letter-spacing:2px;color:var(--muted);}
 
-@media (orientation:portrait){
+.s-col{font-family:'Orbitron',monospace;font-size:18px;color:var(--amber);}
 
-  main{
-    grid-template-columns:1fr;
-  }
+.settings-apply{
+  width:100%;height:48px;
+  border:none;border-radius:14px;
+  background:linear-gradient(180deg,#0b6a55,#07463a);
+  color:#6dffd9;
+  font-family:'Orbitron',monospace;font-size:14px;font-weight:700;letter-spacing:4px;
+  cursor:pointer;
+  margin-top:4px;
+}
+.settings-apply:hover{background:linear-gradient(180deg,#0d8a6e,#0a5e4a);}
 
-  .score-strip{
-    flex:0 0 130px;
-  }
+/* PENALTY BADGE */
+.penalty-warn{
+  font-size:9px;letter-spacing:2px;
+  color:var(--danger);margin-top:2px;
+  display:none;
+}
+.penalty-warn.show{display:block;}
 
-  .sc-num{
-    font-size:52px;
-  }
-
-  .sc-time{
-    font-size:30px;
-  }
-
-  .sc-shot{
-    font-size:24px;
-  }
-
-  .setrow input{
-    width:70px;
-    height:56px;
-    font-size:24px;
-  }
-
-  .btn-set{
-    width:80px;
-    height:56px;
-    font-size:18px;
-  }
-
-  .grp.timer .bw2,
-  .grp.system .bw2,
-  .grp.shot .btn{
-    height:56px;
-  }
+/* RESPONSIVE */
+@media (max-width:640px){
+  main{grid-template-columns:1fr;}
+  body{padding:4px;}
+  .app{gap:4px;}
+  .hdr{height:40px;min-height:40px;padding:0 10px;}
+  .hdr-title{font-size:11px;letter-spacing:3px;}
+  .sc-mid{padding:0 10px;}
+  .period-row{height:36px;}
+  .brow{margin-top:10px;}
 }
 
+@media (orientation:landscape) and (max-height:500px){
+  .sc-num{font-size:28px;}
+  .sc-time{font-size:20px;}
+  .sc-shot{font-size:16px;}
+  .grp.timer .brow .btn,
+  .grp.timer .brow .btn-toggle,
+  .grp.shot .brow .btn,
+  .grp.shot .brow .btn-toggle,
+  .grp.system .brow .btn{height:44px;}
+  .brow{margin-top:6px;}
+  .grp{padding:6px;}
+}
 </style>
 </head>
 
 <body>
-
 <div class="toast" id="toast"></div>
+
+<!-- SETTINGS OVERLAY -->
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-panel">
+    <div class="settings-hdr">
+      <div class="settings-title">⚙ SETTINGS</div>
+      <button class="close-btn" onclick="closeSettings()">✕</button>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">GAME TIMER DEFAULT</div>
+      <div class="settings-row">
+        <label>Default Time</label>
+        <div class="s-input-group">
+          <input type="number" id="cfg_min" min="0" max="99" value="12">
+          <span class="s-col">:</span>
+          <input type="number" id="cfg_sec" min="0" max="59" value="0">
+          <span>M : S</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">SHOT CLOCK PRESETS</div>
+      <div class="settings-row">
+        <label>Preset A (default 24s)</label>
+        <div class="s-input-group">
+          <input type="number" id="cfg_shot1" min="1" max="60" value="24" class="blue">
+          <span>sec</span>
+        </div>
+      </div>
+      <div class="settings-row">
+        <label>Preset B (default 14s)</label>
+        <div class="s-input-group">
+          <input type="number" id="cfg_shot2" min="1" max="60" value="14" class="blue">
+          <span>sec</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">FOUL LIMITS</div>
+      <div class="settings-row">
+        <label>Fouls before penalty</label>
+        <div class="s-input-group">
+          <input type="number" id="cfg_foul_limit" min="1" max="20" value="5" class="red">
+          <span>fouls</span>
+        </div>
+      </div>
+      <div class="settings-row" style="font-size:11px;color:var(--muted);letter-spacing:1px;">
+        When a team reaches this foul count, their foul display will flash red as a penalty indicator.
+      </div>
+    </div>
+
+    <button class="settings-apply" onclick="applySettings()">APPLY SETTINGS</button>
+  </div>
+</div>
 
 <div class="app">
 
-<header class="hdr">
-  <div class="hdr-title">⬡ SCOREBOARD</div>
-
-  <div class="conn">
-    <div class="conn-dot" id="dot"></div>
-    <span id="statusTxt">LIVE</span>
-  </div>
-</header>
-
-<main>
-
-<!-- LEFT -->
-
-<div class="pane">
-
-  <div class="score-strip">
-
-    <div class="sc-cell hc">
-      <div class="sc-tag h">HOME</div>
-      <div class="sc-num" id="home">0</div>
-      <div class="sc-foul">FOULS <b id="hf">0</b></div>
+  <header class="hdr">
+    <div class="hdr-title">⬡ SCOREBOARD</div>
+    <div class="hdr-right">
+      <button class="settings-btn" onclick="openSettings()" title="Settings">⚙</button>
+      <div class="conn">
+        <div class="conn-dot" id="dot"></div>
+        <span id="statusTxt">LIVE</span>
+      </div>
     </div>
+  </header>
 
-    <div class="sc-mid">
+  <main>
 
-      <div class="sc-tag m">GAME</div>
-      <div class="sc-time" id="time">12:00</div>
-      <div class="rpill" id="timerBadge">STOP</div>
+    <!-- LEFT -->
+    <div class="pane">
 
-      <div class="sc-slbl">SHOT</div>
-      <div class="sc-shot" id="shot">24</div>
-      <div class="rpill" id="shotBadge">STOP</div>
+      <div class="score-strip">
+        <div class="sc-cell hc">
+          <div class="sc-tag h">HOME</div>
+          <div class="sc-num" id="home">0</div>
+          <div class="sc-foul">FOULS <b id="hf" class="">0</b></div>
+          <div class="penalty-warn" id="hf_warn">PENALTY</div>
+        </div>
 
-    </div>
+        <div class="sc-mid">
+          <div class="sc-tag m">GAME</div>
+          <div class="sc-time" id="time">12:00</div>
+          <div class="rpill" id="timerBadge">STOP</div>
+          <div class="sc-slbl" style="margin-top:2px;">SHOT</div>
+          <div class="sc-shot" id="shot">24</div>
+          <div class="rpill" id="shotBadge">STOP</div>
+        </div>
 
-    <div class="sc-cell gc">
-      <div class="sc-tag g">GUEST</div>
-      <div class="sc-num" id="guest">0</div>
-      <div class="sc-foul">FOULS <b id="gf">0</b></div>
-    </div>
+        <div class="sc-cell gc">
+          <div class="sc-tag g">GUEST</div>
+          <div class="sc-num" id="guest">0</div>
+          <div class="sc-foul">FOULS <b id="gf" class="">0</b></div>
+          <div class="penalty-warn" id="gf_warn">PENALTY</div>
+        </div>
+      </div>
 
-  </div>
+      <div class="period-row">
+        <button class="bq" id="pBtn1" onclick="setPeriod(1)">Q1</button>
+        <button class="bq" id="pBtn2" onclick="setPeriod(2)">Q2</button>
+        <button class="bq" id="pBtn3" onclick="setPeriod(3)">Q3</button>
+        <button class="bq" id="pBtn4" onclick="setPeriod(4)">Q4</button>
+      </div>
 
-  <div class="period-row">
-    <button class="bq" id="pBtn1" onclick="setPeriod(1)">Q1</button>
-    <button class="bq" id="pBtn2" onclick="setPeriod(2)">Q2</button>
-    <button class="bq" id="pBtn3" onclick="setPeriod(3)">Q3</button>
-    <button class="bq" id="pBtn4" onclick="setPeriod(4)">Q4</button>
-  </div>
+      <!-- SCORE -->
+      <div class="grp score">
+        <div class="grp-label">SCORE</div>
+        <div class="brow">
+          <button class="btn sH" onclick="addScore('home',1)"><span class="lbl">+1</span></button>
+          <button class="btn sH" onclick="addScore('home',2)"><span class="lbl">+2</span></button>
+          <button class="btn sH" onclick="addScore('home',3)"><span class="lbl">+3</span></button>
+          <div class="bdiv"></div>
+          <button class="btn sG" onclick="addScore('guest',1)"><span class="lbl">+1</span></button>
+          <button class="btn sG" onclick="addScore('guest',2)"><span class="lbl">+2</span></button>
+          <button class="btn sG" onclick="addScore('guest',3)"><span class="lbl">+3</span></button>
+        </div>
+        <div class="brow">
+          <button class="btn bw2 sHd" onclick="addScore('home',-1)"><span class="lbl">HOME −1</span></button>
+          <button class="btn bw2 sGd" onclick="addScore('guest',-1)"><span class="lbl">GUEST −1</span></button>
+        </div>
+      </div>
 
-  <!-- SCORE -->
-
-  <div class="grp score" data-label="SCORE">
-
-    <div class="brow">
-
-      <button class="btn sH" onclick="addScore('home',1)">
-        <span class="lbl">+1</span>
-      </button>
-
-      <button class="btn sH" onclick="addScore('home',2)">
-        <span class="lbl">+2</span>
-      </button>
-
-      <button class="btn sH" onclick="addScore('home',3)">
-        <span class="lbl">+3</span>
-      </button>
-
-      <div class="bdiv"></div>
-
-      <button class="btn sG" onclick="addScore('guest',1)">
-        <span class="lbl">+1</span>
-      </button>
-
-      <button class="btn sG" onclick="addScore('guest',2)">
-        <span class="lbl">+2</span>
-      </button>
-
-      <button class="btn sG" onclick="addScore('guest',3)">
-        <span class="lbl">+3</span>
-      </button>
+      <!-- FOULS -->
+      <div class="grp fouls">
+        <div class="grp-label">FOULS</div>
+        <div class="brow">
+          <button class="btn bw2 sH" onclick="addFoul('hf',1)"><span class="ico">⚑</span><span class="lbl">HOME</span></button>
+          <button class="btn bw2 sHd" onclick="addFoul('hf',-1)"><span class="lbl">−1</span></button>
+          <button class="btn bw2 sG" onclick="addFoul('gf',1)"><span class="ico">⚑</span><span class="lbl">GUEST</span></button>
+          <button class="btn bw2 sGd" onclick="addFoul('gf',-1)"><span class="lbl">−1</span></button>
+        </div>
+      </div>
 
     </div>
 
-    <div class="brow">
+    <!-- RIGHT -->
+    <div class="pane">
 
-      <button class="btn bw2 sHd" onclick="addScore('home',-1)">
-        <span class="lbl">HOME −1</span>
-      </button>
+      <!-- TIMER -->
+      <div class="grp timer">
+        <div class="grp-label">GAME TIMER</div>
+        <div class="brow">
+          <button class="btn-toggle stopped" id="timerToggle" onclick="toggleTimer()">
+            <span class="ico" id="timerIco">▶</span>
+            <span class="lbl" id="timerLbl">START</span>
+          </button>
+        </div>
+      </div>
 
-      <button class="btn bw2 sGd" onclick="addScore('guest',-1)">
-        <span class="lbl">GUEST −1</span>
-      </button>
+      <!-- SHOT -->
+      <div class="grp shot">
+        <div class="grp-label">SHOT CLOCK</div>
+        <div class="brow">
+          <button class="btn-toggle stopped" id="shotToggle" onclick="toggleShot()">
+            <span class="ico" id="shotIco">▶</span>
+            <span class="lbl" id="shotLbl">START</span>
+          </button>
+          <button class="btn sAm" onclick="resetShot(cfg.shot1)" id="shotPreset1"><span class="lbl">24s</span></button>
+          <button class="btn sAm" onclick="resetShot(cfg.shot2)" id="shotPreset2"><span class="lbl">14s</span></button>
+        </div>
+      </div>
 
-    </div>
-
-  </div>
-
-  <!-- FOULS -->
-
-  <div class="grp fouls" data-label="FOULS">
-
-    <div class="brow">
-
-      <button class="btn bw2 sH" onclick="addFoul('hf',1)">
-        <span class="ico">⚑</span>
-        <span class="lbl">HOME</span>
-      </button>
-
-      <button class="btn bw2 sHd" onclick="addFoul('hf',-1)">
-        <span class="lbl">−1</span>
-      </button>
-
-      <button class="btn bw2 sG" onclick="addFoul('gf',1)">
-        <span class="ico">⚑</span>
-        <span class="lbl">GUEST</span>
-      </button>
-
-      <button class="btn bw2 sGd" onclick="addFoul('gf',-1)">
-        <span class="lbl">−1</span>
-      </button>
+      <!-- SYSTEM -->
+      <div class="grp system">
+        <div class="grp-label">SYSTEM</div>
+        <div class="brow">
+          <button class="btn bw2 sAc" onclick="doBuzz()"><span class="ico">🔔</span><span class="lbl">BUZZER</span></button>
+          <button class="btn bw2 sDa" onclick="doReset()"><span class="ico">⚠</span><span class="lbl">RESET</span></button>
+        </div>
+      </div>
 
     </div>
-
-  </div>
-
-</div>
-
-<!-- RIGHT -->
-
-<div class="pane">
-
-  <!-- TIMER -->
-
-  <div class="grp timer" data-label="GAME TIMER">
-
-    <div class="setrow">
-
-      <input type="number" id="min" min="0" max="99" value="12">
-
-      <span class="col">:</span>
-
-      <input type="number" id="sec" min="0" max="59" value="0">
-
-      <button class="btn-set" onclick="setTime()">SET</button>
-
-    </div>
-
-    <div class="brow">
-
-      <button class="btn bw2 sSt" onclick="setTimerRun(true)">
-        <span class="ico">▶</span>
-        <span class="lbl">START</span>
-      </button>
-
-      <button class="btn bw2 sPa" onclick="setTimerRun(false)">
-        <span class="ico">⏸</span>
-        <span class="lbl">PAUSE</span>
-      </button>
-
-    </div>
-
-  </div>
-
-  <!-- SHOT -->
-
-  <div class="grp shot" data-label="SHOT CLOCK">
-
-    <div class="brow">
-
-      <button class="btn sSh" onclick="setShotRun(true)">
-        <span class="ico">▶</span>
-      </button>
-
-      <button class="btn sNe" onclick="setShotRun(false)">
-        <span class="ico">⏸</span>
-      </button>
-
-      <button class="btn sAm" onclick="resetShot(24)">
-        <span class="lbl">24s</span>
-      </button>
-
-      <button class="btn sAm" onclick="resetShot(14)">
-        <span class="lbl">14s</span>
-      </button>
-
-    </div>
-
-  </div>
-
-  <!-- SYSTEM -->
-
-  <div class="grp system" data-label="SYSTEM">
-
-    <div class="brow">
-
-      <button class="btn bw2 sAc" onclick="doBuzz()">
-        <span class="ico">🔔</span>
-        <span class="lbl">BUZZER</span>
-      </button>
-
-      <button class="btn bw2 sDa" onclick="doReset()">
-        <span class="ico">⚠</span>
-        <span class="lbl">RESET</span>
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-</main>
-
+  </main>
 </div>
 
 <script>
-
-var firebaseConfig = {
+var firebaseConfig={
   apiKey:"AIzaSyCBeW3-StyUaqnfMb9SeKQL6oESlxJ_ZFg",
   databaseURL:"https://scoreboard-c0863-default-rtdb.asia-southeast1.firebasedatabase.app/"
 };
-
 firebase.initializeApp(firebaseConfig);
+var db=firebase.database();
+var scoreRef=db.ref("scoreboard");
 
-var db = firebase.database();
-var scoreRef = db.ref("scoreboard");
+// Config state (local only — settings panel)
+var cfg={
+  defaultMin:12,
+  defaultSec:0,
+  shot1:24,
+  shot2:14,
+  foulLimit:5
+};
 
-function G(id){
-  return document.getElementById(id);
-}
+// Live timer running states (mirrored from DB)
+var _timerRunning=false;
+var _shotRunning=false;
 
-function pad(n){
-  return String(n).padStart(2,'0');
-}
+function G(id){return document.getElementById(id);}
+function pad(n){return String(n).padStart(2,'0');}
 
 var _tt;
-
 function toast(msg,err){
-
   var t=G('toast');
-
   t.textContent=msg;
-
   t.className='toast'+(err?' err':'')+' show';
-
   clearTimeout(_tt);
-
-  _tt=setTimeout(function(){
-    t.className='toast'+(err?' err':'');
-  },1400);
+  _tt=setTimeout(function(){t.className='toast'+(err?' err':'');},1400);
 }
 
+// ---- SCORE & FOUL ----
 function addScore(f,v){
-
-  scoreRef.child(f).transaction(function(c){
-
-    var n=(c||0)+v;
-
-    return n<0?0:n;
-  });
+  scoreRef.child(f).transaction(function(c){var n=(c||0)+v;return n<0?0:n;});
 }
 
 function addFoul(f,v){
-
-  scoreRef.child(f).transaction(function(c){
-
-    var n=(c||0)+v;
-
-    return n<0?0:n;
-  });
+  scoreRef.child(f).transaction(function(c){var n=(c||0)+v;return n<0?0:n;});
 }
 
-function setTimerRun(s){
-
-  scoreRef.child("timerRun").set(s);
-
-  toast(s?"START":"PAUSE");
+// ---- TIMER TOGGLE ----
+function toggleTimer(){
+  var newState=!_timerRunning;
+  scoreRef.child("timerRun").set(newState);
+  toast(newState?"TIMER START":"TIMER PAUSE");
 }
 
-function setShotRun(s){
+function updateTimerToggleUI(running){
+  var btn=G('timerToggle');
+  var ico=G('timerIco');
+  var lbl=G('timerLbl');
+  if(running){
+    btn.className='btn-toggle running';
+    ico.textContent='⏸';
+    lbl.textContent='PAUSE';
+  } else {
+    btn.className='btn-toggle stopped';
+    ico.textContent='▶';
+    lbl.textContent='START';
+  }
+}
 
-  scoreRef.child("shotRun").set(s);
+// ---- SHOT TOGGLE ----
+function toggleShot(){
+  var newState=!_shotRunning;
+  scoreRef.child("shotRun").set(newState);
+  toast(newState?"SHOT ON":"SHOT OFF");
+}
 
-  toast(s?"SHOT ON":"SHOT OFF");
+function updateShotToggleUI(running){
+  var btn=G('shotToggle');
+  var ico=G('shotIco');
+  var lbl=G('shotLbl');
+  if(running){
+    btn.className='btn-toggle running';
+    ico.textContent='⏸';
+    lbl.textContent='PAUSE';
+  } else {
+    btn.className='btn-toggle stopped';
+    ico.textContent='▶';
+    lbl.textContent='START';
+  }
 }
 
 function resetShot(v){
-
-  scoreRef.update({
-    shot:v,
-    shotRun:true
-  });
-
+  scoreRef.update({shot:v,shotRun:true});
   toast(v+"s");
 }
 
+// ---- PERIOD ----
 function setPeriod(n){
-
-  scoreRef.update({
-    period:n
-  });
-
+  scoreRef.update({period:n});
   toast("Q"+n);
 }
 
-function setTime(){
-
-  var m=parseInt(G('min').value,10);
-  var s=parseInt(G('sec').value,10);
-
-  if(isNaN(m)||isNaN(s)){
-    toast("BAD INPUT",true);
-    return;
-  }
-
-  scoreRef.update({
-    minutes:Math.max(0,Math.min(99,m)),
-    seconds:Math.max(0,Math.min(59,s)),
-    timerRun:false
-  });
-
-  toast("TIME SET");
-}
-
+// ---- BUZZER & RESET ----
 function doBuzz(){
-
-  scoreRef.child("buzz").set(false).then(function(){
-    scoreRef.child("buzz").set(true);
-  });
-
+  scoreRef.child("buzz").set(false).then(function(){scoreRef.child("buzz").set(true);});
   toast("BUZZ!");
 }
 
 function doReset(){
-
   if(!confirm("Reset scoreboard?")) return;
-
   scoreRef.set({
-    home:0,
-    guest:0,
-    hf:0,
-    gf:0,
-    shot:24,
+    home:0,guest:0,hf:0,gf:0,
+    shot:cfg.shot1,
     period:1,
-    minutes:12,
-    seconds:0,
-    timerRun:false,
-    shotRun:false,
-    buzz:false
+    minutes:cfg.defaultMin,
+    seconds:cfg.defaultSec,
+    timerRun:false,shotRun:false,buzz:false
   });
-
   toast("RESET");
 }
 
+// ---- PILL ----
 function pill(id,on){
-
   var e=G(id);
-
   e.textContent=on?"RUN":"STOP";
-
   e.className='rpill'+(on?' on':'');
 }
 
+// ---- FOUL PENALTY CHECK ----
+function checkFoulPenalty(foulEl,warnEl,count){
+  if(count>=cfg.foulLimit){
+    foulEl.textContent='P';
+    foulEl.classList.add('penalty');
+    warnEl.classList.add('show');
+  } else {
+    foulEl.textContent=count;
+    foulEl.classList.remove('penalty');
+    warnEl.classList.remove('show');
+  }
+}
+
+// ---- SETTINGS ----
+function openSettings(){
+  G('cfg_min').value=cfg.defaultMin;
+  G('cfg_sec').value=cfg.defaultSec;
+  G('cfg_shot1').value=cfg.shot1;
+  G('cfg_shot2').value=cfg.shot2;
+  G('cfg_foul_limit').value=cfg.foulLimit;
+  G('settingsOverlay').classList.add('open');
+}
+
+function closeSettings(){
+  G('settingsOverlay').classList.remove('open');
+}
+
+function applySettings(){
+  var m=parseInt(G('cfg_min').value,10);
+  var s=parseInt(G('cfg_sec').value,10);
+  var s1=parseInt(G('cfg_shot1').value,10);
+  var s2=parseInt(G('cfg_shot2').value,10);
+  var fl=parseInt(G('cfg_foul_limit').value,10);
+
+  if(isNaN(m)||isNaN(s)||isNaN(s1)||isNaN(s2)||isNaN(fl)){toast("BAD INPUT",true);return;}
+
+  cfg.defaultMin=Math.max(0,Math.min(99,m));
+  cfg.defaultSec=Math.max(0,Math.min(59,s));
+  cfg.shot1=Math.max(1,Math.min(60,s1));
+  cfg.shot2=Math.max(1,Math.min(60,s2));
+  cfg.foulLimit=Math.max(1,Math.min(20,fl));
+
+  // Push new game time to Firebase so sc-time updates immediately
+  scoreRef.update({
+    minutes:cfg.defaultMin,
+    seconds:cfg.defaultSec,
+    timerRun:false
+  });
+
+  // Update preset button labels
+  G('shotPreset1').querySelector('.lbl').textContent=cfg.shot1+'s';
+  G('shotPreset2').querySelector('.lbl').textContent=cfg.shot2+'s';
+
+  closeSettings();
+  toast("SETTINGS SAVED");
+}
+
+// Close overlay on bg click
+G('settingsOverlay').addEventListener('click',function(e){
+  if(e.target===this) closeSettings();
+});
+
+// ---- FIREBASE LISTENERS ----
 function startListeners(){
-
   scoreRef.on("value",function(snap){
-
     var d=snap.val()||{};
 
     G('home').textContent=d.home||0;
     G('guest').textContent=d.guest||0;
 
-    G('hf').textContent=d.hf||0;
-    G('gf').textContent=d.gf||0;
+    var hfCount=d.hf||0;
+    var gfCount=d.gf||0;
 
-    G('shot').textContent=d.shot||24;
+    checkFoulPenalty(G('hf'),G('hf_warn'),hfCount);
+    checkFoulPenalty(G('gf'),G('gf_warn'),gfCount);
 
-    var m=d.minutes!==undefined?d.minutes:12;
-    var s=d.seconds!==undefined?d.seconds:0;
+    G('shot').textContent=d.shot||cfg.shot1;
 
-    G('time').textContent=pad(m)+":"+pad(s);
+    var mm=d.minutes!==undefined?d.minutes:cfg.defaultMin;
+    var ss=d.seconds!==undefined?d.seconds:cfg.defaultSec;
+    G('time').textContent=pad(mm)+":"+pad(ss);
 
-    pill('timerBadge',d.timerRun);
-    pill('shotBadge',d.shotRun);
+    _timerRunning=!!d.timerRun;
+    _shotRunning=!!d.shotRun;
+
+    pill('timerBadge',_timerRunning);
+    pill('shotBadge',_shotRunning);
+
+    updateTimerToggleUI(_timerRunning);
+    updateShotToggleUI(_shotRunning);
 
     var p=d.period||1;
-
     for(var i=1;i<=4;i++){
-
-      var b=G('pBtn'+i);
-
-      b.className='bq'+(i===p?' active':'');
+      G('pBtn'+i).className='bq'+(i===p?' active':'');
     }
-
   });
 
   db.ref(".info/connected").on("value",function(snap){
-
     var on=snap.val()===true;
-
     G('dot').style.background=on?'#39e273':'#ff3e52';
-
+    G('dot').style.boxShadow=on?'0 0 10px #39e273':'0 0 10px #ff3e52';
     G('statusTxt').textContent=on?'LIVE':'OFFLINE';
+    G('statusTxt').style.color=on?'var(--green)':'var(--danger)';
   });
 }
 
 startListeners();
-
 </script>
-
 </body>
 </html>
