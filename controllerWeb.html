@@ -939,25 +939,25 @@ function addFoul(f,v){
   scoreRef.child(f).transaction(function(c){var n=(c||0)+v;return n<0?0:n;});
 }
 
-// ---- TIMER TOGGLE ----
+// ---- TIMER TOGGLE — controls both clocks ----
 function toggleTimer(){
-  var newState=!(_timerRunning&&_shotRunning);
-  _timerRunning=newState;
-  _shotRunning=newState;
-  updateTimerToggleUI(newState);
-  updateShotToggleUI(newState);
-  pill('timerBadge',newState);
-  pill('shotBadge',newState);
-  scoreRef.update({timerRun:newState,shotRun:newState}).catch(function(){
-    _timerRunning=!newState;
-    _shotRunning=!newState;
+  var newState = !_timerRunning;
+  _timerRunning = newState;
+  _shotRunning  = newState;  // shot always follows timer start/pause
+  updateTimerToggleUI(_timerRunning);
+  updateShotToggleUI(_shotRunning);
+  pill('timerBadge', _timerRunning);
+  pill('shotBadge',  _shotRunning);
+  scoreRef.update({timerRun: _timerRunning, shotRun: _shotRunning}).catch(function(){
+    _timerRunning = !_timerRunning;
+    _shotRunning  = _timerRunning;
     updateTimerToggleUI(_timerRunning);
     updateShotToggleUI(_shotRunning);
-    pill('timerBadge',_timerRunning);
-    pill('shotBadge',_shotRunning);
-    toast("TIMER ERROR",true);
+    pill('timerBadge', _timerRunning);
+    pill('shotBadge',  _shotRunning);
+    toast("TIMER ERROR", true);
   });
-  toast(newState?"CLOCKS START":"CLOCKS PAUSE");
+  toast(_timerRunning ? "CLOCKS START" : "CLOCKS PAUSE");
 }
 
 function updateTimerToggleUI(running){
@@ -975,25 +975,19 @@ function updateTimerToggleUI(running){
   }
 }
 
-// ---- SHOT TOGGLE ----
+// ---- SHOT TOGGLE — only controls shot independently ----
 function toggleShot(){
-  var newState=!(_timerRunning&&_shotRunning);
-  _timerRunning=newState;
-  _shotRunning=newState;
-  updateTimerToggleUI(newState);
-  updateShotToggleUI(newState);
-  pill('timerBadge',newState);
-  pill('shotBadge',newState);
-  scoreRef.update({timerRun:newState,shotRun:newState}).catch(function(){
-    _timerRunning=!newState;
-    _shotRunning=!newState;
-    updateTimerToggleUI(_timerRunning);
+  var newState = !_shotRunning;
+  _shotRunning = newState;
+  updateShotToggleUI(_shotRunning);
+  pill('shotBadge', _shotRunning);
+  scoreRef.update({shotRun: _shotRunning}).catch(function(){
+    _shotRunning = !_shotRunning;
     updateShotToggleUI(_shotRunning);
-    pill('timerBadge',_timerRunning);
-    pill('shotBadge',_shotRunning);
-    toast("SHOT ERROR",true);
+    pill('shotBadge', _shotRunning);
+    toast("SHOT ERROR", true);
   });
-  toast(newState?"CLOCKS START":"CLOCKS PAUSE");
+  toast(_shotRunning ? "SHOT START" : "SHOT PAUSE");
 }
 
 function updateShotToggleUI(running){
@@ -1011,9 +1005,13 @@ function updateShotToggleUI(running){
   }
 }
 
+// ---- RESET SHOT — resets value only, never touches timer ----
 function resetShot(v){
-  scoreRef.update({shot:v,shotRun:_timerRunning});
-  toast(v+"s");
+  _shotRunning = true;
+  updateShotToggleUI(true);
+  pill('shotBadge', true);
+  scoreRef.update({shot: v, shotRun: true});
+  toast(v + "s");
 }
 
 // ---- PERIOD ----
@@ -1201,15 +1199,22 @@ function startListeners(){
     var ss=d.seconds!==undefined?d.seconds:cfg.defaultSec;
     G('time').textContent=pad(mm)+":"+pad(ss);
 
-    var clocksRunning=asBool(d.timerRun)&&asBool(d.shotRun);
-    _timerRunning=clocksRunning;
-    _shotRunning=clocksRunning;
+    _timerRunning=asBool(d.timerRun);
+    _shotRunning=asBool(d.shotRun);
 
-    pill('timerBadge',_timerRunning);
-    pill('shotBadge',_shotRunning);
-
-    updateTimerToggleUI(_timerRunning);
-    updateShotToggleUI(_shotRunning);
+    // If shot expired (shotRun=false) while timer was running,
+    // Arduino already paused both — mirror that here
+    if(!_shotRunning && !_timerRunning){
+      updateTimerToggleUI(false);
+      updateShotToggleUI(false);
+      pill('timerBadge',false);
+      pill('shotBadge',false);
+    } else {
+      updateTimerToggleUI(_timerRunning);
+      updateShotToggleUI(_shotRunning);
+      pill('timerBadge',_timerRunning);
+      pill('shotBadge',_shotRunning);
+    }
 
     var p=d.period||1;
     for(var i=1;i<=4;i++){
