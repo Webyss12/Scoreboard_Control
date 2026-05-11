@@ -382,7 +382,51 @@ main{
   font-size:10px;letter-spacing:4px;color:#5f7288;
   flex:0 0 auto;
   padding:2px 2px 0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
 }
+.grp.fouls .grp-label{
+  justify-content:space-between;
+  padding:0 8px 4px;
+}
+.grp.fouls .grp-label .lbl-h,
+.grp.fouls .grp-label .lbl-g{
+  font-size:10px;
+  letter-spacing:2px;
+}
+.grp.fouls .grp-label .lbl-h{color:var(--home);}
+.grp.fouls .grp-label .lbl-g{color:var(--guest);}
+
+.foul-mid{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Orbitron',monospace;
+  font-size:9px;
+  letter-spacing:1px;
+  text-align:center;
+  padding:4px 8px;
+  border-radius:6px;
+  background:#0a121d;
+  border:1px solid var(--border2);
+  margin-bottom:4px;
+}
+.foul-mid.h{color:var(--home);}
+.foul-mid.g{color:var(--guest);}
+.foul-col{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.foul-btns{
+  display:flex;
+  gap:6px;
+  width:100%;
+}
+.foul-btns .btn{flex:1;}
 
 /* ROWS */
 .brow{
@@ -844,12 +888,15 @@ main{
 
       <!-- FOULS -->
       <div class="grp fouls">
-        <div class="grp-label">FOULS</div>
+        <div class="grp-label">
+          <span class="lbl-h">HOME FOULS</span>
+          <span class="lbl-g">GUEST FOULS</span>
+        </div>
         <div class="brow">
-          <button class="btn bw2 sH" onclick="addFoul('hf',1)"><span class="ico">+ HOME</span><span class="lbl"></span></button>
-          <button class="btn bw2 sHd" onclick="addFoul('hf',-1)"><span class="lbl">−1</span></button>
-          <button class="btn bw2 sG" onclick="addFoul('gf',1)"><span class="ico">+ GUEST</span><span class="lbl"></span></button>
-          <button class="btn bw2 sGd" onclick="addFoul('gf',-1)"><span class="lbl">−1</span></button>
+          <button class="btn bw2 sH" onclick="addFoul('hf',1)"><span class="lbl">+</span></button>
+          <button class="btn bw2 sHd" onclick="addFoul('hf',-1)"><span class="lbl">−</span></button>
+          <button class="btn bw2 sG" onclick="addFoul('gf',1)"><span class="lbl">+</span></button>
+          <button class="btn bw2 sGd" onclick="addFoul('gf',-1)"><span class="lbl">−</span></button>
         </div>
       </div>
 
@@ -1190,6 +1237,7 @@ function startListeners(){
     var hfCount=d.hf||0;
     var gfCount=d.gf||0;
 
+    // Update score strip fouls
     checkFoulPenalty(G('hf'),G('hf_warn'),hfCount);
     checkFoulPenalty(G('gf'),G('gf_warn'),gfCount);
 
