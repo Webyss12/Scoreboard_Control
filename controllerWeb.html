@@ -983,7 +983,7 @@ function addScore(f,v){
 }
 
 function addFoul(f,v){
-  scoreRef.child(f).transaction(function(c){var n=(c||0)+v;return n<0?0:n;});
+  scoreRef.child(f).transaction(function(c){var n=(c||0)+v;return n<0?0:(n>cfg.foulLimit?cfg.foulLimit:n);});
 }
 
 // ---- TIMER TOGGLE — controls both clocks ----
@@ -1022,19 +1022,25 @@ function updateTimerToggleUI(running){
   }
 }
 
-// ---- SHOT TOGGLE — only controls shot independently ----
+// ---- SHOT TOGGLE — now controls both clocks ----
 function toggleShot(){
   var newState = !_shotRunning;
   _shotRunning = newState;
+  _timerRunning = newState;  // shot toggle now also controls timer
   updateShotToggleUI(_shotRunning);
+  updateTimerToggleUI(_timerRunning);
   pill('shotBadge', _shotRunning);
-  scoreRef.update({shotRun: _shotRunning}).catch(function(){
+  pill('timerBadge', _timerRunning);
+  scoreRef.update({shotRun: _shotRunning, timerRun: _timerRunning}).catch(function(){
     _shotRunning = !_shotRunning;
+    _timerRunning = !_timerRunning;
     updateShotToggleUI(_shotRunning);
+    updateTimerToggleUI(_timerRunning);
     pill('shotBadge', _shotRunning);
+    pill('timerBadge', _timerRunning);
     toast("SHOT ERROR", true);
   });
-  toast(_shotRunning ? "SHOT START" : "SHOT PAUSE");
+  toast(_shotRunning ? "CLOCKS START" : "CLOCKS PAUSE");
 }
 
 function updateShotToggleUI(running){
@@ -1052,12 +1058,15 @@ function updateShotToggleUI(running){
   }
 }
 
-// ---- RESET SHOT — resets value only, never touches timer ----
+// ---- RESET SHOT — resets value and starts both clocks ----
 function resetShot(v){
   _shotRunning = true;
+  _timerRunning = true;
   updateShotToggleUI(true);
+  updateTimerToggleUI(true);
   pill('shotBadge', true);
-  scoreRef.update({shot: v, shotRun: true});
+  pill('timerBadge', true);
+  scoreRef.update({shot: v, shotRun: true, timerRun: true});
   toast(v + "s");
 }
 
@@ -1141,7 +1150,9 @@ function applySettings(){
     minutes:cfg.defaultMin,
     seconds:cfg.defaultSec,
     timerRun:false,
-    shotRun:false
+    shotRun:false,
+    hf:0,
+    gf:0
   });
 
   // Update preset button labels
@@ -1242,6 +1253,13 @@ function startListeners(){
     checkFoulPenalty(G('gf'),G('gf_warn'),gfCount);
 
     G('shot').textContent=d.shot||cfg.shot1;
+
+    // If shot clock reaches 0, pause the timer
+    if((d.shot===0 || d.shot==='0') && _timerRunning){
+      _timerRunning=false;
+      _shotRunning=false;
+      scoreRef.update({timerRun:false, shotRun:false});
+    }
 
     var mm=d.minutes!==undefined?d.minutes:cfg.defaultMin;
     var ss=d.seconds!==undefined?d.seconds:cfg.defaultSec;
